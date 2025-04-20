@@ -1,0 +1,2 @@
+# check_english_analyze
+英語を前処理する方法を検討する
