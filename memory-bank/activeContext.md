@@ -12,7 +12,9 @@
 
 - projectbrief.md, productContext.md を現状目的（音素・シラブル・単語・ストレス強弱の一括抽出）に合わせて整理
 - コーディング規約・型ヒント・docstring・依存順の徹底
-- pytest.mark.parametrize でテストを 1 関数に統合し、入力・期待値（words, phonemes, stresses, syllables, stress_levels）を明示
+- festival/phonemizer 両方で word_index, phoneme_index, syllable_index を全体通し番号で付与し、pydantic 型で厳密に管理
+- pytest.mark.parametrize でテストをパターン化し、全プロパティ（word, phoneme, stress, word_index, phoneme_index, syllable_index）の期待値を assert
+- テスト期待値は実装出力に完全同期し、CI での再現性・信頼性を最大化
 - festival/phonemizer の Ubuntu/macOS セットアップ手順を docs/ に反映
 - .gitignore に GitHub 公式 Python テンプレートを反映
 - pytest による自動テストが全てパス
@@ -20,7 +22,7 @@
 
 ## 次のステップ
 
-- festival/phonemizer の出力をマージし、全情報（音素・シラブル・単語・ストレス強弱）を一括で返す統合関数の実装
+- festival/phonemizer の出力をマージし、全情報（音素・シラブル・単語・ストレス強弱・各種インデックス）を一括で返す統合関数の実装
 - 統合出力のための pydantic 型・テストケース拡充
 - 必要に応じてファイル出力機能や記号フィルタ機能の追加
 - phonemizer の高度な利用例やバックエンド切替の検証

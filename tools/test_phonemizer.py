@@ -4,7 +4,7 @@ from tools.process_phonemizer import PhonemeInfo, phonemizer_espeak
 
 
 @pytest.mark.parametrize(
-    "text, expected_words, expected_phonemes, expected_stresses",
+    "text, expected_words, expected_phonemes, expected_stresses, expected_word_indexes, expected_phoneme_indexes",
     [
         pytest.param(
             "internationalization",
@@ -29,6 +29,8 @@ from tools.process_phonemizer import PhonemeInfo, phonemizer_espeak
                 "n",
             ],
             [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [0] * 17,
+            list(range(17)),
             id="basic",
         ),
         pytest.param(
@@ -47,12 +49,21 @@ from tools.process_phonemizer import PhonemeInfo, phonemizer_espeak
                 "!",
             ],
             [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 1, 2, 2, 2, 2, 3],
+            list(range(10)),
             id="punct",
         ),
     ],
 )
-def test_phonemizer_param(text, expected_words, expected_phonemes, expected_stresses):
-    """phonemizer+espeakで音素・ストレス情報を取得し、期待値と比較"""
+def test_phonemizer_param(
+    text,
+    expected_words,
+    expected_phonemes,
+    expected_stresses,
+    expected_word_indexes,
+    expected_phoneme_indexes,
+):
+    """phonemizer+espeakで音素・ストレス・インデックス情報を取得し、期待値と比較"""
     result = phonemizer_espeak(text, verbose=False)
     assert isinstance(result, list)
     assert all(isinstance(x, PhonemeInfo) for x in result)
@@ -66,3 +77,9 @@ def test_phonemizer_param(text, expected_words, expected_phonemes, expected_stre
 
     stresses = [x.stress for x in result]
     assert stresses == expected_stresses
+
+    word_indexes = [x.word_index for x in result]
+    assert word_indexes == expected_word_indexes
+
+    phoneme_indexes = [x.phoneme_index for x in result]
+    assert phoneme_indexes == expected_phoneme_indexes

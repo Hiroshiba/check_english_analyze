@@ -21,12 +21,14 @@ logger = get_logger(Path(__file__))
 
 
 class PhonemeInfo(BaseModel):
-    """単語・シラブル・音素・ストレス情報"""
+    """単語・シラブル・音素・ストレス・インデックス情報"""
 
     word: str
-    syllable_index: int | None
-    phoneme: str | None
-    stress: int | None
+    word_index: int
+    syllable_index: int
+    phoneme: str
+    phoneme_index: int
+    stress: int
 
 
 def main():
@@ -125,11 +127,13 @@ def extract_sexp(output: str) -> list[PhonemeInfo]:
         raise RuntimeError("sexpdata.loads失敗") from e
 
     infos: list[PhonemeInfo] = []
-    for word_entry in sexp:
+    phoneme_index = 0
+    syllable_index = 0
+    for word_index, word_entry in enumerate(sexp):
         witem = word_entry[0][0]
         word = witem.value() if isinstance(witem, sexpdata.Symbol) else str(witem)
         has_syl = False
-        for syl_idx, syl_entry in enumerate(word_entry[1:], 1):
+        for syl_entry in word_entry[1:]:
             if not (
                 isinstance(syl_entry, list)
                 and syl_entry
@@ -173,20 +177,28 @@ def extract_sexp(output: str) -> list[PhonemeInfo]:
                 infos.append(
                     PhonemeInfo(
                         word=word,
-                        syllable_index=syl_idx,
+                        word_index=word_index,
+                        syllable_index=syllable_index,
                         phoneme=phoneme,
-                        stress=int(stress) if stress is not None else None,
+                        phoneme_index=phoneme_index,
+                        stress=int(stress) if stress is not None else 0,
                     )
                 )
+                phoneme_index += 1
+            syllable_index += 1
         if not has_syl:
             infos.append(
                 PhonemeInfo(
                     word=word,
-                    syllable_index=None,
-                    phoneme=None,
-                    stress=None,
+                    word_index=word_index,
+                    syllable_index=syllable_index,
+                    phoneme=word,
+                    phoneme_index=phoneme_index,
+                    stress=0,
                 )
             )
+            phoneme_index += 1
+            syllable_index += 1
     return infos
 
 

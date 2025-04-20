@@ -21,10 +21,12 @@ logger = get_logger(Path(__file__))
 
 
 class PhonemeInfo(BaseModel):
-    """単語・音素・ストレス情報"""
+    """単語・音素・ストレス・インデックス情報"""
 
     word: str
+    word_index: int
     phoneme: str
+    phoneme_index: int
     stress: int
 
 
@@ -68,7 +70,8 @@ def phonemizer_espeak(text: str, verbose: bool) -> list[PhonemeInfo]:
     logger.debug(f"phones: {phones}")
 
     infos: list[PhonemeInfo] = []
-    for word, phone_str in zip(words, phones, strict=False):
+    phoneme_index = 0
+    for word_index, (word, phone_str) in enumerate(zip(words, phones, strict=False)):
         if not isinstance(phone_str, str):
             raise RuntimeError("phonemize()の戻り値がstr型でない")
         for ph, st, w in parse_phoneme(phone_str, word):
@@ -77,10 +80,13 @@ def phonemizer_espeak(text: str, verbose: bool) -> list[PhonemeInfo]:
             infos.append(
                 PhonemeInfo(
                     word=w,
+                    word_index=word_index,
                     phoneme=ph,
+                    phoneme_index=phoneme_index,
                     stress=st,
                 )
             )
+            phoneme_index += 1
     return infos
 
 
