@@ -12,6 +12,12 @@ uv を使う。
 uv add ライブラリ名
 ```
 
+### 静的解析・コードフォーマット
+
+```sh
+uv run ruff check --fix && uv run ruff format
+```
+
 ## festival
 
 festival のインストール方法については[docs/festival.md](docs/festival.md)を参照。\

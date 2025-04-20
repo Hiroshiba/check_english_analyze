@@ -73,3 +73,39 @@ cd ..
 ```sh
 ./festival/bin/festival --version
 ```
+
+## cmu_us_slt_arctic_clunits 音声・festlex-cmu 辞書の導入
+
+### 1. cmu_us_slt_arctic_clunits 音声のダウンロード・展開
+
+```sh
+mkdir -p festival/lib/voices/us
+wget -O cmu_us_slt_arctic-0.95-release.tar.bz2 http://festvox.org/cmu_arctic/cmu_arctic/packed/cmu_us_slt_arctic-0.95-release.tar.bz2
+tar xvjf cmu_us_slt_arctic-0.95-release.tar.bz2
+mv cmu_us_slt_arctic festival/lib/voices/us/cmu_us_slt_arctic_clunits
+rm cmu_us_slt_arctic-0.95-release.tar.bz2
+```
+
+### 2. festlex-cmu（CMU 辞書）パッケージのダウンロード・展開
+
+```sh
+wget -O festlex-cmu_1.4.0.orig.tar.gz http://archive.ubuntu.com/ubuntu/pool/universe/f/festlex-cmu/festlex-cmu_1.4.0.orig.tar.gz
+tar xvfz festlex-cmu_1.4.0.orig.tar.gz
+rm festlex-cmu_1.4.0.orig.tar.gz
+```
+
+### 3. festlex-poslex（英語品詞辞書）パッケージのダウンロード・展開
+
+```sh
+wget -O festlex-poslex_1.4.0.orig.tar.gz http://archive.ubuntu.com/ubuntu/pool/universe/f/festlex-poslex/festlex-poslex_1.4.0.orig.tar.gz
+tar xvfz festlex-poslex_1.4.0.orig.tar.gz
+rm festlex-poslex_1.4.0.orig.tar.gz
+```
+
+### 4. 動作確認
+
+エラーが出なければ OK。
+
+```sh
+echo '(voice_cmu_us_slt_arctic_clunits) (lex.select "cmu") (lex.list)' | ./festival/bin/festival -i --pipe
+```
