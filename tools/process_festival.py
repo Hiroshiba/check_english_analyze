@@ -2,8 +2,8 @@
 英語テキストから音素・シラブル・ストレス情報をjsonで出力するツール。
 
 Usage:
-    PYTHONPATH=. uv run python tools/festival.py "internationalization"
-    PYTHONPATH=. uv run python tools/festival.py "hello, world!" --verbose
+    PYTHONPATH=. uv run python tools/process_festival.py "internationalization"
+    PYTHONPATH=. uv run python tools/process_festival.py "hello, world!" --verbose
 """
 
 import argparse

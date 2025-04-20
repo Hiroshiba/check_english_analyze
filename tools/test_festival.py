@@ -1,4 +1,4 @@
-from tools.festival import PhonemeInfo, festival
+from tools.process_festival import PhonemeInfo, festival
 
 
 def test_festival_basic():
