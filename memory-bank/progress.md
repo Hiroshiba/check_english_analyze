@@ -2,29 +2,33 @@
 
 ## 現状動作していること
 
-- tools/process_phonemizer.py で英語テキストから音素・ストレス情報を phonemizer+espeak 経由で抽出し、pydantic 型・logger・CLI/ロジック分離・コーディング規約・型安全・例外処理・pytest テスト・README 整備まで徹底
-- pytest.mark.parametrize によるテスト統合・期待値（words, phonemes, stresses）明示で CI の再現性・信頼性を大幅向上
-- tools/festival.py で英語テキストから音素・シラブル・ストレス情報を Festival 経由で抽出し、S 式出力・sexpdata パース・PhonemeInfo(pydantic)リスト変換・json 出力まで厳密な型安全・コーディング規約・例外処理・フォーマット・logger/verbose 分離・pytest テスト・README 整備まで徹底
+- tools/process_festival.py で英語テキストから音素・シラブル情報を Festival 経由で抽出し、S 式パース・pydantic 型・json 出力・logger/verbose 分離・pytest テストまで徹底
+- tools/process_phonemizer.py で英語テキストから音素・ストレス強弱情報を phonemizer+espeak 経由で抽出し、pydantic 型・logger・CLI/ロジック分離・pytest テストまで徹底
 - OS 自動判別（macOS: ./festival/bin/festival, Linux: festival）でクロスプラットフォーム対応
-- festival/phonemizer の Ubuntu セットアップ手順を docs/festival.md, docs/phonemizer.md に反映
+- festival/phonemizer の Ubuntu/macOS セットアップ手順を docs/ に反映
 - .gitignore に Python 公式テンプレートを反映
-- "hello", "Yes, It's ok! I see. Good!", "internationalization" など多様なテストケースで安定動作を確認
+- 多様なテストケースで安定動作を確認
 - pytest による自動テストが tools/test_festival.py, tools/test_phonemizer.py で常時検証可能
 - README.md にテスト方法（PYTHONPATH=. pytest）を明記
 
 ## 残タスク
 
+- festival/phonemizer の出力を単語単位でマージし、「音素・シラブル・単語・ストレス強弱」を一括で返す統合関数の実装
+- 統合出力のための pydantic 型・テストケース拡充
 - 必要に応じてファイル出力機能や記号フィルタ機能の追加
 - phonemizer の高度な利用例やバックエンド切替の検証
 
 ## 現在のステータス
 
-- festival.py の型安全・json 出力・コーディング規約・例外処理・フォーマット・logger/verbose 分離・pytest テスト・README 整備まで安定動作
-- festival/phonemizer ともに Ubuntu で公式パッケージ・PyPI で安定運用可能
+- festival/phonemizer の個別出力は型安全・json 出力・コーディング規約・例外処理・フォーマット・logger/verbose 分離・pytest テスト・README 整備まで安定動作
+- festival/phonemizer ともに Ubuntu/macOS で公式パッケージ・PyPI で安定運用可能
 - 記号や空白の扱いも明確化されている
 
 ## 既知の課題
 
+- festival: シラブル取得可・ストレス強弱不可
+- phonemizer: ストレス強弱取得可・シラブル不可
+- 両者の出力を単語単位で正確にマージするアルゴリズム設計が必要
 - Festival の No default voice found ワーニングは依然出力される（機能自体には影響なし）
 - 記号や空白を用途に応じてフィルタする必要がある
 
@@ -35,3 +39,4 @@
 - コードフォーマット・型厳密化・例外処理（raise ... from e）を徹底
 - pydantic 導入により PhonemeInfo 型で全出力を厳密に管理
 - OS 差異を吸収する実装・ドキュメント・.gitignore・テストの整備を重視
+- festival/phonemizer の出力統合・型設計・テスト設計を最優先
