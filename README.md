@@ -19,6 +19,15 @@ festival のインストール方法については[docs/festival.md](docs/festi
 
 - macOS: `./festival/bin/festival`
 
+## phonemizer
+
+phonemizer のインストール・利用方法については[docs/phonemizer.md](docs/phonemizer.md)を参照。
+
+```sh
+# macOS
+echo hello | uv run phonemize -b espeak -l en --espeak-library /opt/homebrew/Cellar/espeak/*/lib/libespeak.dylib # hələʊ
+```
+
 ## g2p_en の利用
 
 `g2p_en`は英語の綴りから発音記号（音素列）を推定する Python ライブラリ。
@@ -33,8 +42,8 @@ uv run python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng', q
 
 ### 使い方例
 
-```python
-from g2p_en import G2p
-g2p = G2p()
-print(g2p("hello"))  # ['HH', 'AH0', 'L', 'OW1']
+上記を実行する場合は:
+
+```sh
+uv run python -c "from g2p_en import G2p; g2p = G2p(); print(g2p('hello'))" # ['HH', 'AH0', 'L', 'OW1']
 ```
