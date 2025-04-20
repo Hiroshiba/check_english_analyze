@@ -5,11 +5,12 @@
 - festival（TTS エンジン, apt/brew）
 - phonemizer（PyPI, uv/pip）
 - espeak（apt/brew, phonemizer バックエンド用）
-- pytest（自動テスト）
+- pytest（自動テスト、parametrize によるパターン網羅）
 - ruff（静的解析・フォーマット）
-- pydantic（型安全）
+- pydantic（型安全、データ構造厳密化）
 - sexpdata（S 式パース）
 - uv（Python パッケージ管理）
+- 独自 logger（utility/logger_utility.py）
 
 ## 開発環境・セットアップ
 
@@ -26,37 +27,21 @@
 #### 共通
 
 - 想定外の挙動は例外を投げよ
-  - エラーは問題の早期発見に繋がる
-  - 型を合わせるために if を使う場合も例外を投げよ
-- コメントを書くな
-  - コメントは可読性を下げるため書くな
-  - 変数名や関数名からわかるコメントを書くな
-  - 関数やクラスは docstring を１行書け
-  - コメントが必要なら関数に切り出せ
-  - 絶対に意図が読み取れないときのみコメントを書け
-- 不要は削除せよ
-  - 不使用な引数は書くな
-- 統一せよ
-  - 変数定義や引数定義の順番を揃えよ
-  - 命名規則を一貫させよ
-  - 関数名・クラス名と docstring の説明は名詞・動詞を一致させよ
-- 依存が多いものを上に、依存が少ないものを下に書け
-  - 処理の本質をコード上部に配置せよ
-  - main 関数は最上部に配置せよ
-  - 他の関数を用いないプライベート関数は最下部に配置せよ
-  - 他の関数に依存され、他の関数に依存する関数は間に配置せよ
-- API keys や credentials を読むな
+- コメント禁止（docstring 必須、意図は関数化で明確化）
+- 不要な引数・変数は削除
+- 命名・docstring・型ヒント・依存順の統一
+- 依存が多いものを上に、依存が少ないものを下に書く
+- main 関数は最上部、プライベート関数は最下部
+- import 文は最上部
+- API keys や credentials は扱わない
 
 #### Python のコーディング規約
 
-- `os.path`を使うな
-  - `from pathlib import Path`を使え
-- `with Path.open()`を使うな
-  - `Path.read_text()`や`Path.read_bytes()`を使え
-- 関数の引数・返り値に型ヒントを付けよ
-- import 文はコード最上部にまとめよ
-- `if __main__:`は最下部に書け
-  - `def main():`は最上部に配置せよ
+- os.path 禁止、Pathlib 推奨
+- with Path.open 禁止、Path.read_text/read_bytes 推奨
+- 関数の引数・返り値に型ヒント必須
+- コード自動整形（ruff 等）
+- pytest.mark.parametrize によるテスト網羅
 
 #### HTML のコーディング規約
 
@@ -71,3 +56,4 @@
 
 - OS 差異を吸収しクロスプラットフォームで動作する CLI・テスト・ドキュメントを徹底
 - .gitignore, テスト, フォーマット, 型安全, 例外処理を重視
+- pydantic 型・logger 設計・CLI/ロジック分離・テスト期待値明示で CI の再現性・信頼性を最大化

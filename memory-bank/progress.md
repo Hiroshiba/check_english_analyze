@@ -2,12 +2,14 @@
 
 ## 現状動作していること
 
+- tools/process_phonemizer.py で英語テキストから音素・ストレス情報を phonemizer+espeak 経由で抽出し、pydantic 型・logger・CLI/ロジック分離・コーディング規約・型安全・例外処理・pytest テスト・README 整備まで徹底
+- pytest.mark.parametrize によるテスト統合・期待値（words, phonemes, stresses）明示で CI の再現性・信頼性を大幅向上
 - tools/festival.py で英語テキストから音素・シラブル・ストレス情報を Festival 経由で抽出し、S 式出力・sexpdata パース・PhonemeInfo(pydantic)リスト変換・json 出力まで厳密な型安全・コーディング規約・例外処理・フォーマット・logger/verbose 分離・pytest テスト・README 整備まで徹底
 - OS 自動判別（macOS: ./festival/bin/festival, Linux: festival）でクロスプラットフォーム対応
 - festival/phonemizer の Ubuntu セットアップ手順を docs/festival.md, docs/phonemizer.md に反映
 - .gitignore に Python 公式テンプレートを反映
 - "hello", "Yes, It's ok! I see. Good!", "internationalization" など多様なテストケースで安定動作を確認
-- pytest による自動テストが tools/test_festival.py で常時検証可能
+- pytest による自動テストが tools/test_festival.py, tools/test_phonemizer.py で常時検証可能
 - README.md にテスト方法（PYTHONPATH=. pytest）を明記
 
 ## 残タスク
