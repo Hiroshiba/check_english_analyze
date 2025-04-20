@@ -1,5 +1,23 @@
 # Festival
 
+## Ubuntu でのインストール手順
+
+### 1. 必要パッケージのインストール
+
+```sh
+sudo apt update
+sudo apt install festival festvox-us-slt-hts
+```
+
+### 2. 動作確認
+
+エラーが出なければ OK。
+
+```sh
+festival --version
+echo '(voice_cmu_us_slt_arctic_hts) (lex.select "cmu") (lex.list)' | festival -i --pipe
+```
+
 ## macOS でのインストール手順
 
 ### 1. 必要ツールのインストール

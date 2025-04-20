@@ -8,6 +8,7 @@ Usage:
 
 import argparse
 import json
+import platform
 import subprocess
 from pathlib import Path
 
@@ -73,10 +74,17 @@ def build_festival_script(text: str) -> str:
 
 def run_festival(script: str) -> str:
     """Festivalを実行し出力を得る"""
+    system = platform.system()
+    if system == "Darwin":
+        cmd = ["./festival/bin/festival", "-i", "--pipe"]
+    elif system == "Linux":
+        cmd = ["festival", "-i", "--pipe"]
+    else:
+        raise RuntimeError(f"未対応OS: {system}")
     logger.debug(f"script: {script}")
     try:
         output = subprocess.check_output(
-            ["./festival/bin/festival", "-i", "--pipe"],
+            cmd,
             input=script.encode(),
             stderr=subprocess.STDOUT,
         ).decode()

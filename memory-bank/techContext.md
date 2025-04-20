@@ -2,11 +2,22 @@
 
 ## 採用技術・ライブラリ
 
--
+- festival（TTS エンジン, apt/brew）
+- phonemizer（PyPI, uv/pip）
+- espeak（apt/brew, phonemizer バックエンド用）
+- pytest（自動テスト）
+- ruff（静的解析・フォーマット）
+- pydantic（型安全）
+- sexpdata（S 式パース）
+- uv（Python パッケージ管理）
 
 ## 開発環境・セットアップ
 
--
+- Ubuntu, macOS 両対応
+- festival, espeak は各 OS のパッケージマネージャで導入
+- phonemizer は uv add phonemizer で導入
+- .gitignore は GitHub 公式 Python テンプレートを採用
+- テストは PYTHONPATH=. uv run pytest で実行
 
 ## 技術的制約
 
@@ -54,8 +65,9 @@
 
 ## 依存関係
 
--
+- festival, espeak, phonemizer, pytest, ruff, pydantic, sexpdata, uv
 
 ## ツール利用方針
 
--
+- OS 差異を吸収しクロスプラットフォームで動作する CLI・テスト・ドキュメントを徹底
+- .gitignore, テスト, フォーマット, 型安全, 例外処理を重視

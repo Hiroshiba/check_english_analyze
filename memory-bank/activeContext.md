@@ -2,20 +2,23 @@
 
 ## 現在の作業フォーカス
 
-- tools/festival.py の厳密な型安全・コーディング規約・verbose/logger 対応・pytest テスト・README 整備
+- festival/phonemizer の Ubuntu セットアップ手順をドキュメントに反映
+- tools/festival.py の OS 自動判別・コーディング規約準拠リファクタ
+- .gitignore の Python 公式テンプレート反映
+- テスト・CI の安定化
 
 ## 直近の変更・決定事項
 
-- pydantic による PhonemeInfo 型で厳密な型安全を実現
-- S 式出力 →sexpdata パース →PhonemeInfo リスト変換 →json 出力まで一貫して型安全
-- verbose 時のみ logger で stderr に詳細出力、通常は json のみ標準出力
-- pytest による自動テストを tools/test_festival.py で導入
-- コーディング規約・ruff/フォーマッター・例外処理（raise ... from e）を徹底
-- README.md にテスト方法（PYTHONPATH=. pytest）を明記
+- docs/festival.md, docs/phonemizer.md に Ubuntu 手順を macOS と同じ粒度で追記
+- tools/festival.py で OS 自動判別（macOS: ./festival/bin/festival, Linux: festival）を実装し、import 順・関数順・docstring 等も規約に完全準拠
+- .gitignore に GitHub 公式 Python テンプレートを追記
+- pytest による自動テストが全てパス
+- festival/phonemizer ともに Ubuntu で動作確認済み
 
 ## 次のステップ
 
 - 必要に応じてファイル出力機能や記号フィルタ機能の追加
+- phonemizer の高度な利用例やバックエンド切替の検証
 
 ## 重要なパターン・好み
 
@@ -23,9 +26,10 @@
 - logger/verbose/出力分離
 - pytest による自動テスト
 - コードフォーマット・型厳密化・例外処理の徹底
+- OS 差異を吸収する実装
 
 ## 学び・インサイト
 
-- Festival は記号や空白も word として出力するため、用途に応じたフィルタが必要
-- 長い単語や複雑な文でもシラブル・ストレス・音素が正確に抽出できる
-- コードフォーマット・型厳密化・例外処理・テスト自動化を徹底することで保守性・信頼性が大幅に向上する
+- festival/phonemizer ともに Ubuntu で公式パッケージ・PyPI で安定運用可能
+- OS 差異を吸収することでクロスプラットフォームな CLI ツールが実現できる
+- ドキュメント・.gitignore・テストの整備が保守性・信頼性向上に直結する
