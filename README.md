@@ -18,6 +18,12 @@ uv add ライブラリ名
 uv run ruff check --fix && uv run ruff format
 ```
 
+### テスト
+
+```sh
+PYTHONPATH=. uv run pytest
+```
+
 ## festival
 
 festival のインストール方法については[docs/festival.md](docs/festival.md)を参照。\

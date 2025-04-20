@@ -1,3 +1,11 @@
+"""
+英語テキストから音素・シラブル・ストレス情報をjsonで出力するツール。
+
+Usage:
+    PYTHONPATH=. uv run python tools/festival.py "internationalization"
+    PYTHONPATH=. uv run python tools/festival.py "hello, world!" --verbose
+"""
+
 import argparse
 import json
 import subprocess
@@ -8,7 +16,6 @@ from pydantic import BaseModel
 
 from utility.logger_utility import get_logger, logging_setting
 
-logging_setting()
 logger = get_logger(Path(__file__))
 
 
@@ -22,20 +29,31 @@ class PhonemeInfo(BaseModel):
 
 
 def main():
-    """英語テキストから音素・シラブル・ストレス有無を抽出しprintする"""
-    text = parse_args()
-    script = build_festival_script(text)
-    output = run_festival(script)
-    infos = extract_sexp(output)
+    """コマンドライン引数から実行するエントリポイント"""
+    text, verbose = parse_args()
+    infos = festival(text, verbose)
     print_phoneme_info(infos)
 
 
-def parse_args() -> str:
-    """コマンドライン引数からテキストを取得する"""
+def parse_args(args: list[str] | None = None) -> tuple[str, bool]:
+    """コマンドライン引数からテキストとverboseを取得する"""
     parser = argparse.ArgumentParser()
     parser.add_argument("text", type=str, help="解析するテキスト")
-    args = parser.parse_args()
-    return args.text
+    parser.add_argument(
+        "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
+    )
+    parsed = parser.parse_args(args)
+    return parsed.text, parsed.verbose
+
+
+def festival(text: str, verbose: bool) -> list[PhonemeInfo]:
+    """英語テキストから音素・シラブル・ストレス情報を抽出しPhonemeInfoリストで返す"""
+    logging_setting(level=10 if verbose else 20, to_stderr=True)
+    logger.debug("verboseモード: ON")
+    script = build_festival_script(text)
+    output = run_festival(script)
+    infos = extract_sexp(output)
+    return infos
 
 
 def build_festival_script(text: str) -> str:
@@ -55,7 +73,7 @@ def build_festival_script(text: str) -> str:
 
 def run_festival(script: str) -> str:
     """Festivalを実行し出力を得る"""
-    print(f"script: {script}")
+    logger.debug(f"script: {script}")
     try:
         output = subprocess.check_output(
             ["./festival/bin/festival", "-i", "--pipe"],
@@ -63,17 +81,18 @@ def run_festival(script: str) -> str:
             stderr=subprocess.STDOUT,
         ).decode()
     except subprocess.CalledProcessError as e:
+        logger.error("festival実行エラー")
         raise RuntimeError("festival実行エラー") from e
-    print("=== festival出力 ===")
-    print(output)
+    logger.debug("=== festival出力 ===\n" + output)
     return output
 
 
 def extract_sexp(output: str) -> list[PhonemeInfo]:
     """Festival出力からS式部分を抽出し、PhonemeInfoリストに変換する"""
-    print("=== S式抽出 ===")
+    logger.debug("=== S式抽出 ===")
     start = output.find('((("')
     if start == -1:
+        logger.error("S式部分が見つかりません")
         raise RuntimeError("S式部分が見つかりません")
     paren = 0
     end = None
@@ -86,13 +105,15 @@ def extract_sexp(output: str) -> list[PhonemeInfo]:
                 end = i + 1
                 break
     if end is None:
+        logger.error("S式の括弧が閉じていません")
         raise RuntimeError("S式の括弧が閉じていません")
     sexp_text = output[start:end]
-    print(sexp_text)
-    print("=== S式パース ===")
+    logger.debug("S式: " + sexp_text)
+    logger.debug("=== S式パース ===")
     try:
         sexp = sexpdata.loads(sexp_text)
     except Exception as e:
+        logger.error("sexpdata.loads失敗")
         raise RuntimeError("sexpdata.loads失敗") from e
 
     infos: list[PhonemeInfo] = []
@@ -162,7 +183,7 @@ def extract_sexp(output: str) -> list[PhonemeInfo]:
 
 
 def print_phoneme_info(infos: list[PhonemeInfo]) -> None:
-    """PhonemeInfoリストを見やすいJSONでprintする"""
+    """PhonemeInfoリストを見やすいJSONで標準出力する"""
     print(
         json.dumps([info.model_dump() for info in infos], ensure_ascii=False, indent=2)
     )

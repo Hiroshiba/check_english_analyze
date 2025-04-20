@@ -17,3 +17,8 @@ select = ["E", "F", "B", "I", "W", "UP"]
 ignore = [
     "E501", # line-too-long
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
