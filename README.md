@@ -2,6 +2,30 @@
 
 英語を前処理する方法を検討する。
 
+## 使い方
+
+tools ディレクトリ配下の主要スクリプトは以下の通りです。
+
+- `process_festival.py`  
+  英語テキストから音素・シラブル・ストレス情報を抽出
+
+  ```
+  PYTHONPATH=. uv run python tools/process_festival.py "hello, world!"
+  ```
+
+- `process_phonemizer.py`  
+  英語テキストから音素・ストレス情報を抽出
+
+  ```
+  PYTHONPATH=. uv run python tools/process_phonemizer.py "hello, world!"
+  ```
+
+- `extract_feature.py`  
+  festival/phonemizer 両方の出力を統合し、音素・シラブル・単語・ストレス強弱を一括抽出
+  ```
+  PYTHONPATH=. uv run python tools/extract_feature.py "hello, world!"
+  ```
+
 ## 環境構築
 
 uv を使う。
@@ -24,14 +48,16 @@ uv run ruff check --fix && uv run ruff format
 PYTHONPATH=. uv run pytest
 ```
 
-## festival
+## 依存ライブラリの紹介
+
+### festival
 
 festival のインストール方法については[docs/festival.md](docs/festival.md)を参照。\
 コマンドは以下の場所にある。
 
 - macOS: `./festival/bin/festival`
 
-## phonemizer
+### phonemizer
 
 phonemizer のインストール・利用方法については[docs/phonemizer.md](docs/phonemizer.md)を参照。
 
@@ -40,11 +66,11 @@ phonemizer のインストール・利用方法については[docs/phonemizer.m
 echo hello | uv run phonemize -b espeak -l en --espeak-library /opt/homebrew/Cellar/espeak/*/lib/libespeak.dylib # hələʊ
 ```
 
-## g2p_en の利用
+### g2p_en の利用
 
 `g2p_en`は英語の綴りから発音記号（音素列）を推定する Python ライブラリ。
 
-### nltk リソースの前準備
+#### nltk リソースの前準備
 
 初回利用時は下記コマンドで nltk リソースをダウンロードする。
 
@@ -52,7 +78,7 @@ echo hello | uv run phonemize -b espeak -l en --espeak-library /opt/homebrew/Cel
 uv run python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng', quiet=True)"
 ```
 
-### 使い方例
+#### 使い方例
 
 上記を実行する場合は:
 

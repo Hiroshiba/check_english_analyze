@@ -26,7 +26,7 @@
 
 - festival: シラブル取得可・ストレス強弱不可
 - phonemizer+espeak: ストレス強弱取得可・シラブル不可
-- 両者の出力を単語単位でマージし、「音素・シラブル・単語・ストレス強弱」を一括抽出
+- extract_feature.py で両者の出力を単語単位でマージし、「音素・シラブル・単語・ストレス強弱」を一括抽出
 - 統合出力は pydantic 型で厳密に管理し、テスト期待値も明示
 
 ### コーディング規約
@@ -50,6 +50,7 @@
 - コード自動整形（ruff 等）
 - pytest.mark.parametrize によるテスト網羅
 - festival/phonemizer の出力仕様変更に追従できる型設計・テスト設計
+- テスト・assert・パターン順序・docstring・引数順も全ファイルで統一
 
 #### HTML のコーディング規約
 
@@ -65,4 +66,5 @@
 - OS 差異を吸収しクロスプラットフォームで動作する CLI・テスト・ドキュメントを徹底
 - .gitignore, テスト, フォーマット, 型安全, 例外処理を重視
 - pydantic 型・logger 設計・CLI/ロジック分離・テスト期待値明示で CI の再現性・信頼性を最大化
+- extract_feature.py/test_extract_feature.py による統合ロジック・テスト網羅性・コーディング規約徹底
 - festival/phonemizer の出力統合・型設計・テスト設計を最優先
