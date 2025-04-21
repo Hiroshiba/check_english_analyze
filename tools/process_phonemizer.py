@@ -7,7 +7,10 @@ Usage:
 """
 
 import argparse
+import glob
 import json
+import os
+import platform
 import re
 from pathlib import Path
 
@@ -56,6 +59,8 @@ def phonemizer_espeak(text: str, verbose: bool) -> list[PhonemeInfo]:
 
     words = split_words(text)
     logger.debug(f"words: {words}")
+
+    set_espeak_library_for_macos()
 
     phones = phonemize(
         words,
@@ -127,6 +132,19 @@ def print_phoneme_info(infos: list[PhonemeInfo]) -> None:
             indent=2,
         )
     )
+
+
+def set_espeak_library_for_macos() -> None:
+    """macOS用にespeak dylibパスを環境変数にセット。なければwarning出力"""
+    if platform.system() != "Darwin":
+        return
+    dylib_paths = glob.glob("/opt/homebrew/Cellar/espeak/*/lib/libespeak.dylib")
+    if dylib_paths:
+        os.environ["PHONEMIZER_ESPEAK_LIBRARY"] = dylib_paths[0]
+    else:
+        logger.warning(
+            "espeak dylibが見つかりません: /opt/homebrew/Cellar/espeak/*/lib/libespeak.dylib"
+        )
 
 
 if __name__ == "__main__":
