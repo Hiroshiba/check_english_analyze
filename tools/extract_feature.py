@@ -7,6 +7,7 @@ Usage:
 """
 
 import json
+from pathlib import Path
 
 from pydantic import BaseModel
 
@@ -14,6 +15,9 @@ from tools.process_festival import PhonemeInfo as FestivalInfo
 from tools.process_festival import festival as run_festival
 from tools.process_phonemizer import PhonemeInfo as PhonemizerInfo
 from tools.process_phonemizer import phonemizer_espeak
+from utility.logger_utility import get_logger, logging_setting
+
+logger = get_logger(Path(__file__))
 
 
 class UnifiedPhonemeInfo(BaseModel):
@@ -49,11 +53,11 @@ def parse_args(args: list[str] | None = None) -> tuple[str, bool]:
 
 def extract_feature(text: str, verbose: bool) -> list[UnifiedPhonemeInfo]:
     """英語テキストから音素・シラブル・ストレス情報を抽出しUnifiedPhonemeInfoリストで返す"""
+    logging_setting(level=10 if verbose else 20, to_stderr=True)
     fest = run_festival(text, verbose)
     phnm = phonemizer_espeak(text, verbose)
 
-    if not _check_consistency(fest, phnm):
-        raise RuntimeError("festival/phonemizerの単語・インデックス情報が一致しません")
+    validate(fest, phnm, verbose)
 
     result: list[UnifiedPhonemeInfo] = []
     for f, p in zip(fest, phnm, strict=False):
@@ -81,18 +85,43 @@ def print_phoneme_info(infos: list[UnifiedPhonemeInfo]) -> None:
     )
 
 
-def _check_consistency(fest: list[FestivalInfo], phnm: list[PhonemizerInfo]) -> bool:
-    """festival/phonemizerの単語・インデックス情報が一致しているか確認する"""
+def validate(
+    fest: list[FestivalInfo], phnm: list[PhonemizerInfo], verbose: bool
+) -> None:
+    """festival/phonemizerの単語・インデックス情報が一致しているか検証し、不一致なら詳細な例外を投げる"""
     if len(fest) != len(phnm):
-        return False
-    for f, p in zip(fest, phnm, strict=False):
-        if (
-            f.word != p.word
-            or f.word_index != p.word_index
-            or f.phoneme_index != p.phoneme_index
-        ):
-            return False
-    return True
+        if verbose:
+            logger.debug(f"要素数不一致: festival={len(fest)}, phonemizer={len(phnm)}")
+            logger.debug("festival側: " + str([(f.word, f.phoneme) for f in fest]))
+            logger.debug("phonemizer側: " + str([(p.word, p.phoneme) for p in phnm]))
+        raise ValueError(
+            f"festival/phonemizerの要素数が一致しません: festival={len(fest)}, phonemizer={len(phnm)}"
+        )
+    for i, (f, p) in enumerate(zip(fest, phnm, strict=False)):
+        if f.word != p.word:
+            if verbose:
+                logger.debug(
+                    f"word不一致 at index {i}: festival='{f.word}', phonemizer='{p.word}'"
+                )
+            raise ValueError(
+                f"word不一致 at index {i}: festival='{f.word}', phonemizer='{p.word}'"
+            )
+        if f.word_index != p.word_index:
+            if verbose:
+                logger.debug(
+                    f"word_index不一致 at index {i}: festival={f.word_index}, phonemizer={p.word_index}"
+                )
+            raise ValueError(
+                f"word_index不一致 at index {i}: festival={f.word_index}, phonemizer={p.word_index}"
+            )
+        if f.phoneme_index != p.phoneme_index:
+            if verbose:
+                logger.debug(
+                    f"phoneme_index不一致 at index {i}: festival={f.phoneme_index}, phonemizer={p.phoneme_index}"
+                )
+            raise ValueError(
+                f"phoneme_index不一致 at index {i}: festival={f.phoneme_index}, phonemizer={p.phoneme_index}"
+            )
 
 
 if __name__ == "__main__":
