@@ -2,6 +2,21 @@
 
 ## 現状動作していること
 
+- tools/process_alignment.py を大幅に改良
+  - TextGrid 形式から lab 形式（開始秒・終了秒・音素記号のスペース区切り）に出力形式を変更
+  - TextGrid は一時ディレクトリに出力し、lab 形式に変換して最終出力
+  - lab 形式の各行情報を pydantic.BaseModel（LabEntry）で管理
+  - 関数順序を process_phonemizer.py や process_festival.py と完全に統一（main→parse_args→ ロジック本体 → サブロジック → 出力関数）
+  - glob パターンによるファイル指定に対応（`--text_glob`、`--wav_glob`）
+  - glob パターンを展開する処理を`expand_glob_pattern`関数として切り出し
+  - 出力先ディレクトリを必須パラメータに変更（`--output_dir`に`required=True`を追加）
+  - 一時ディレクトリを`tempfile.TemporaryDirectory`で自動削除するように変更
+  - ログ出力を他の process\_\*.py ファイルと細部まで統一（詳細なデバッグログ、エラーロギング、コマンド実行ログなど）
+  - テキストファイルと音声ファイルの数が一致しない場合のエラーハンドリングを追加
+  - MFA の align コマンドに`--clean`と`--overwrite`オプションを追加
+  - prepare_corpus_dir 関数で既存のディレクトリを削除してから新規作成するように修正
+  - run_mfa_align 関数で出力ディレクトリが存在する場合は事前に削除するように修正
+  - TextGrid ファイルの空のテキスト区間（ポーズ）を"(.)"として出力するように修正
 - tools/process_festival.py, tools/process_phonemizer.py, tools/extract_feature.py で英語テキストの音素・シラブル・ストレス強弱等を抽出し、pydantic 型・logger・CLI/ロジック分離・pytest テスト・コーディング規約統一を徹底
 - tools/process*mfa.py を新規実装し、他の tools/process*\*.py と完全に同じ設計・書式・例外伝播に統一
 - validate_mfa_command で conda コマンド・mfa 環境・mfa コマンドの存在を事前検証し、エラー時は docs/mfa.md 参照を案内
@@ -25,10 +40,6 @@
 
 ## 残タスク
 
-- 他の CLI 追加時も既存 tools/process\_\*.py と一行単位で徹底比較し、完全統一を最初から実現
-- validate 系の設計・案内文も最初に方針を決めて実装
-- ドキュメント・エラー案内も最小限・統一化を徹底
-- dict.json を活用した音素名寄せ・バリアント吸収ロジックの設計・実装
 - シラブル・音素・ストレス・単語情報を 1 コマンドで抽出する CLI/API の実装
 - ファイル出力機能や記号フィルタ機能など extract_feature.py の拡張
 - phonemizer の高度な利用例やバックエンド切替の検証
@@ -42,6 +53,8 @@
 - festival/phonemizer ともに Ubuntu/macOS で公式パッケージ・PyPI で安定運用可能
 - 記号や空白の扱いも明確化されている
 - 辞書運用・難単語解析・未登録音素ペアの追加運用により網羅性・拡張性が向上
+- process_alignment.py が複数ファイル対応・一時ディレクトリ自動削除・出力先必須化・詳細ログ出力により使いやすさと安定性が向上
+- 共通処理を関数として切り出し、コードの再利用性と可読性を向上（例：`expand_glob_pattern`関数）
 
 ## 既知の課題
 
@@ -49,6 +62,7 @@
 - phonemizer: ストレス強弱取得可・シラブル不可
 - Festival の No default voice found ワーニングは依然出力される（機能自体には影響なし）
 - 記号や空白を用途に応じてフィルタする必要がある
+- MFA のデフォルト動作（`--clean`と`--overwrite`が False）により、明示的にオプション指定しないと以前の実行結果が残る可能性がある
 
 ## 意思決定の経緯・履歴
 
@@ -59,3 +73,7 @@
 - OS 差異を吸収する実装・ドキュメント・.gitignore・テストの整備を重視
 - festival/phonemizer/mfa の出力統合・型設計・テスト設計を最優先
 - KPT で「徹底比較・一括設計・能動的な統一」の重要性を明文化
+- 外部ツール（MFA）のデフォルト動作を理解し、必要なオプションを明示的に指定することの重要性を確認
+- 詳細なログ出力による処理フローの可視化を全ファイルで統一し、デバッグ・問題解決を容易に
+- 一時ファイル・ディレクトリの自動削除によるクリーンな実行環境の維持を徹底
+- 共通処理は関数として切り出し、コードの再利用性と可読性を向上させる方針を採用

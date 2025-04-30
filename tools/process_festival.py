@@ -91,7 +91,6 @@ def run_festival(script: str) -> str:
             stderr=subprocess.STDOUT,
         ).decode()
     except subprocess.CalledProcessError as e:
-        logger.error("festival実行エラー")
         raise RuntimeError("festival実行エラー") from e
     logger.debug("=== festival出力 ===\n" + output)
     return output
@@ -102,7 +101,6 @@ def extract_sexp(output: str) -> list[PhonemeInfo]:
     logger.debug("=== S式抽出 ===")
     start = output.find('((("')
     if start == -1:
-        logger.error("S式部分が見つかりません")
         raise RuntimeError("S式部分が見つかりません")
     paren = 0
     end = None
@@ -115,7 +113,6 @@ def extract_sexp(output: str) -> list[PhonemeInfo]:
                 end = i + 1
                 break
     if end is None:
-        logger.error("S式の括弧が閉じていません")
         raise RuntimeError("S式の括弧が閉じていません")
     sexp_text = output[start:end]
     logger.debug("S式: " + sexp_text)
@@ -123,7 +120,6 @@ def extract_sexp(output: str) -> list[PhonemeInfo]:
     try:
         sexp = sexpdata.loads(sexp_text)
     except Exception as e:
-        logger.error("sexpdata.loads失敗")
         raise RuntimeError("sexpdata.loads失敗") from e
 
     infos: list[PhonemeInfo] = []

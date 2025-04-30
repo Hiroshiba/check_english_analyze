@@ -90,35 +90,21 @@ def validate(
 ) -> None:
     """festival/phonemizerの単語・インデックス情報が一致しているか検証し、不一致なら詳細な例外を投げる"""
     if len(fest) != len(phnm):
-        if verbose:
-            logger.debug(f"要素数不一致: festival={len(fest)}, phonemizer={len(phnm)}")
-            logger.debug("festival側: " + str([(f.word, f.phoneme) for f in fest]))
-            logger.debug("phonemizer側: " + str([(p.word, p.phoneme) for p in phnm]))
+        logger.debug("festival側: " + str([(f.word, f.phoneme) for f in fest]))
+        logger.debug("phonemizer側: " + str([(p.word, p.phoneme) for p in phnm]))
         raise ValueError(
             f"festival/phonemizerの要素数が一致しません: festival={len(fest)}, phonemizer={len(phnm)}"
         )
     for i, (f, p) in enumerate(zip(fest, phnm, strict=False)):
         if f.word != p.word:
-            if verbose:
-                logger.debug(
-                    f"word不一致 at index {i}: festival='{f.word}', phonemizer='{p.word}'"
-                )
             raise ValueError(
                 f"word不一致 at index {i}: festival='{f.word}', phonemizer='{p.word}'"
             )
         if f.word_index != p.word_index:
-            if verbose:
-                logger.debug(
-                    f"word_index不一致 at index {i}: festival={f.word_index}, phonemizer={p.word_index}"
-                )
             raise ValueError(
                 f"word_index不一致 at index {i}: festival={f.word_index}, phonemizer={p.word_index}"
             )
         if f.phoneme_index != p.phoneme_index:
-            if verbose:
-                logger.debug(
-                    f"phoneme_index不一致 at index {i}: festival={f.phoneme_index}, phonemizer={p.phoneme_index}"
-                )
             raise ValueError(
                 f"phoneme_index不一致 at index {i}: festival={f.phoneme_index}, phonemizer={p.phoneme_index}"
             )
