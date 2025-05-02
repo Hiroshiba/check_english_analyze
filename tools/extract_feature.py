@@ -126,7 +126,7 @@ def combine_phoneme_with_lab(
                 word=info.word,
                 word_index=info.word_index,
                 syllable_index=info.syllable_index,
-                phoneme=info.phoneme,
+                phoneme=lab.phoneme,
                 phoneme_index=info.phoneme_index,
                 stress=info.stress,
                 start=lab.start,

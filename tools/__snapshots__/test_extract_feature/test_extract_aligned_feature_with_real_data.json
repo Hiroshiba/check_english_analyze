@@ -1,15 +1,15 @@
 {
   "Hello,-world": [
-    "AlignedPhonemeInfo(word='', word_index=0, syllable_index=0, phoneme='', phoneme_index=0, stress=0, start=0.0, end=0.13)",
+    "AlignedPhonemeInfo(word='', word_index=0, syllable_index=0, phoneme='(.)', phoneme_index=0, stress=0, start=0.0, end=0.13)",
     "AlignedPhonemeInfo(word='Hello', word_index=1, syllable_index=1, phoneme='h', phoneme_index=1, stress=0, start=0.13, end=0.31)",
     "AlignedPhonemeInfo(word='Hello', word_index=1, syllable_index=1, phoneme='ə', phoneme_index=2, stress=0, start=0.31, end=0.39)",
     "AlignedPhonemeInfo(word='Hello', word_index=1, syllable_index=1, phoneme='l', phoneme_index=3, stress=0, start=0.39, end=0.46)",
-    "AlignedPhonemeInfo(word='Hello', word_index=1, syllable_index=2, phoneme='oʊ', phoneme_index=4, stress=1, start=0.46, end=0.67)",
-    "AlignedPhonemeInfo(word=',', word_index=2, syllable_index=3, phoneme=',', phoneme_index=5, stress=0, start=0.67, end=0.97)",
-    "AlignedPhonemeInfo(word='world', word_index=3, syllable_index=4, phoneme='w', phoneme_index=6, stress=1, start=0.97, end=1.06)",
+    "AlignedPhonemeInfo(word='Hello', word_index=1, syllable_index=2, phoneme='əw', phoneme_index=4, stress=1, start=0.46, end=0.67)",
+    "AlignedPhonemeInfo(word=',', word_index=2, syllable_index=3, phoneme='(.)', phoneme_index=5, stress=0, start=0.67, end=0.97)",
+    "AlignedPhonemeInfo(word='world', word_index=3, syllable_index=4, phoneme='ʋ', phoneme_index=6, stress=1, start=0.97, end=1.06)",
     "AlignedPhonemeInfo(word='world', word_index=3, syllable_index=4, phoneme='ɜː', phoneme_index=7, stress=1, start=1.06, end=1.29)",
     "AlignedPhonemeInfo(word='world', word_index=3, syllable_index=4, phoneme='l', phoneme_index=8, stress=1, start=1.29, end=1.32)",
-    "AlignedPhonemeInfo(word='world', word_index=3, syllable_index=4, phoneme='d', phoneme_index=9, stress=1, start=1.32, end=1.41)",
-    "AlignedPhonemeInfo(word='', word_index=4, syllable_index=5, phoneme='', phoneme_index=10, stress=0, start=1.41, end=1.695057)"
+    "AlignedPhonemeInfo(word='world', word_index=3, syllable_index=4, phoneme='ɖ', phoneme_index=9, stress=1, start=1.32, end=1.41)",
+    "AlignedPhonemeInfo(word='', word_index=4, syllable_index=5, phoneme='(.)', phoneme_index=10, stress=0, start=1.41, end=1.695057)"
   ]
 }
