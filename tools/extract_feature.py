@@ -4,10 +4,13 @@
 Usage:
     PYTHONPATH=. uv run python tools/extract_feature.py "internationalization"
     PYTHONPATH=. uv run python tools/extract_feature.py "hello, world!" --verbose
+
+ストレス情報は同一シラブル内で同じ値となる。
 """
 
 import argparse
 import json
+from collections import defaultdict
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -90,7 +93,7 @@ def extract_feature(text: str, verbose: bool) -> list[UnifiedPhonemeInfo]:
             )
 
     result.sort(key=lambda x: x.phoneme_index)
-    return result
+    return unify_stress_by_syllable(result)
 
 
 def group_by_word(
@@ -103,6 +106,43 @@ def group_by_word(
             result[info.word] = []
         result[info.word].append(info)
     return result
+
+
+def unify_stress_by_syllable(
+    infos: list[UnifiedPhonemeInfo],
+) -> list[UnifiedPhonemeInfo]:
+    """syllable_indexごとにstressを統一する"""
+    grouped: defaultdict[tuple[int, int], list[UnifiedPhonemeInfo]] = defaultdict(list)
+    for info in infos:
+        grouped[(info.word_index, info.syllable_index)].append(info)
+
+    unified_result: list[UnifiedPhonemeInfo] = []
+    for group in grouped.values():
+        stresses = [info.stress for info in group]
+        unique_stresses = set(stresses)
+        if unique_stresses == {0}:
+            unified_stress = 0
+        elif unique_stresses <= {0, 1} and stresses.count(1) == 1:
+            unified_stress = 1
+        elif unique_stresses <= {0, 2} and stresses.count(2) == 1:
+            unified_stress = 2
+        else:
+            raise ValueError(
+                f"syllable_index={group[0].syllable_index} (word_index={group[0].word_index}, word='{group[0].word}') のストレス値が不正: {stresses}（許容パターン: 全0, 1つだけ1, 1つだけ2）"
+            )
+        for info in group:
+            unified_result.append(
+                UnifiedPhonemeInfo(
+                    word=info.word,
+                    word_index=info.word_index,
+                    syllable_index=info.syllable_index,
+                    phoneme=info.phoneme,
+                    phoneme_index=info.phoneme_index,
+                    stress=unified_stress,
+                )
+            )
+    unified_result.sort(key=lambda x: x.phoneme_index)
+    return unified_result
 
 
 def print_phoneme_info(infos: list[UnifiedPhonemeInfo]) -> None:

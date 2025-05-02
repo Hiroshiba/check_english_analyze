@@ -23,6 +23,7 @@
 - tools/process*mfa.py を他の tools/process*\*.py と完全に同じ設計・書式・例外伝播に統一
 - validate_mfa_command で conda コマンド・mfa 環境・mfa コマンドの存在を事前検証
 - extract_feature.py で festival/phonemizer 両方の出力を統合する機能実装
+  - ストレス情報（stress）は同一シラブル内で必ず同じ値となる仕様を明文化・実装・テスト・ドキュメントで統一
 
 ## 次のステップ
 
