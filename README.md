@@ -22,8 +22,23 @@ tools ディレクトリ配下の主要スクリプトは以下の通りです�
 
 - `process_syllable.py`  
   festival/phonemizer 両方の出力を統合し、音素・シラブル・単語・ストレス強弱を一括抽出
+
   ```
   PYTHONPATH=. uv run python tools/process_syllable.py "hello, world!"
+  ```
+
+- `process_alignment.py`  
+  英語音声ファイルとテキストファイルを元に音素アライメントの lab ファイルを出力
+
+  ```
+  PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output
+  ```
+
+- `extract_feature.py`  
+  テキストと wav ファイルから、音素・シラブル・ストレス・アライメント情報を結合した json ファイルを出力
+
+  ```
+  PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output
   ```
 
 ## 環境構築
@@ -44,8 +59,19 @@ uv run ruff check --fix && uv run ruff format
 
 ### テスト
 
+#### 通常のテスト実行
+
 ```sh
 PYTHONPATH=. uv run pytest
+```
+
+#### スナップショットテスト
+
+syrupy を使ったスナップショットテストを導入しています。  
+初回または出力仕様変更時は以下のコマンドでスナップショットを更新してください：
+
+```sh
+PYTHONPATH=. uv run pytest --snapshot-update
 ```
 
 ## 依存ライブラリの紹介
@@ -85,3 +111,7 @@ uv run python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng', q
 ```sh
 uv run python -c "from g2p_en import G2p; g2p = G2p(); print(g2p('hello'))" # ['HH', 'AH0', 'L', 'OW1']
 ```
+
+### MFA (Montreal Forced Aligner)
+
+MFA（Montreal Forced Aligner）のインストール・利用方法については[docs/mfa.md](docs/mfa.md)を参照。

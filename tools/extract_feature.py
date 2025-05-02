@@ -147,7 +147,7 @@ def add_silence_phonemes(
             word="",
             word_index=0,
             syllable_index=0,
-            phoneme="(.)",
+            phoneme="",
             phoneme_index=0,
             stress=0,
         )
@@ -170,7 +170,7 @@ def add_silence_phonemes(
             word="",
             word_index=result[-1].word_index + 1,
             syllable_index=result[-1].syllable_index + 1,
-            phoneme="(.)",
+            phoneme="",
             phoneme_index=result[-1].phoneme_index + 1,
             stress=0,
         )

@@ -7,6 +7,8 @@
 - symbol_mapping.json の拡充・音素マッピングの追加
 - コーディング規約・スタイルの徹底（不要なコメント削除、docstring 簡素化、例外処理の統一）
 - 不整合があった場合のエラー処理の改善（警告からエラーへの変更）
+- tools/process_alignment.py, tools/extract_feature.py に対する syrupy スナップショットテストの実装・運用
+- 実データ（tools/data/_.txt, _.wav）を使った統合的な出力検証
 
 ## 直近の変更・決定事項
 
@@ -16,6 +18,11 @@
   - 必ず先頭・末尾に無音要素を追加する設計に統一
   - 音素不一致時は例外的にエラーではなく警告として処理し続行する仕様（NOTE コメントで明記）
   - コーディングスタイルは process_alignment.py に合わせて実装
+- syrupy を dev 依存として導入し、スナップショットテストを実装
+- tools/conftest.py で JSON スナップショット用 fixture を定義
+- tools/test_process_alignment.py で alignment 関数のスナップショットテストを実装
+- tools/test_extract_feature.py で extract_aligned_feature 関数の JSON スナップショットテストを実装
+- 実際のデータ（tools/data/_.txt, _.wav）を使用した統合テストを重視
 - 命名規則統一のため、tools/extract_feature.py を tools/process_syllable.py にリネーム
   - テストファイルも tools/test_extract_feature.py から tools/test_process_syllable.py に変更
   - README も更新し、他の process\_\* 系ツールと命名を統一

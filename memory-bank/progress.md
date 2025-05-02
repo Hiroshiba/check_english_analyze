@@ -2,6 +2,14 @@
 
 ## 現状動作していること
 
+- tools/process_alignment.py, tools/extract_feature.py に対する syrupy スナップショットテストを追加
+  - tools/data/_.txt, _.wav を使った統合的な出力検証
+  - syrupy を dev 依存として導入
+  - tools/conftest.py で JSON スナップショット用 fixture を定義
+  - tools/test_process_alignment.py で alignment 関数のスナップショットテストを実装
+  - tools/test_extract_feature.py で extract_aligned_feature 関数の JSON スナップショットテストを実装
+  - 初回は `uv run pytest tools/test_process_alignment.py tools/test_extract_feature.py --snapshot-update` でスナップショット生成
+  - 以降は通常の pytest コマンドでスナップショット差分を検知可能
 - tools/extract_feature.py を実装
   - テキストと wav ファイルから音素・シラブル・ストレス・アライメント情報を結合
   - AlignedPhonemeInfo モデルで型安全な情報管理

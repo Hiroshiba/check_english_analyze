@@ -1,0 +1,18 @@
+# serializer version: 1
+# name: test_alignment_with_real_data
+  dict({
+    'Hello,-world': list([
+      LabEntry(start=0.0, end=0.13, phoneme='(.)'),
+      LabEntry(start=0.13, end=0.31, phoneme='h'),
+      LabEntry(start=0.31, end=0.39, phoneme='ə'),
+      LabEntry(start=0.39, end=0.46, phoneme='l'),
+      LabEntry(start=0.46, end=0.67, phoneme='əw'),
+      LabEntry(start=0.67, end=0.97, phoneme='(.)'),
+      LabEntry(start=0.97, end=1.06, phoneme='ʋ'),
+      LabEntry(start=1.06, end=1.29, phoneme='ɜː'),
+      LabEntry(start=1.29, end=1.32, phoneme='l'),
+      LabEntry(start=1.32, end=1.41, phoneme='ɖ'),
+      LabEntry(start=1.41, end=1.695057, phoneme='(.)'),
+    ]),
+  })
+# ---
