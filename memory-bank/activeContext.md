@@ -3,13 +3,16 @@
 ## 現在の作業フォーカス
 
 - festival と phonemizer の音素列を適切にアライメントするモジュール（tools/match_phonemes.py）の設計・実装
-- 音素列のアライメントに基づいて情報を統合するロジックの改善（tools/extract_feature.py）
+- 音素列のアライメントに基づいて情報を統合するロジックの改善（tools/process_syllable.py）
 - symbol_mapping.json の拡充・音素マッピングの追加
 - コーディング規約・スタイルの徹底（不要なコメント削除、docstring 簡素化、例外処理の統一）
 - 不整合があった場合のエラー処理の改善（警告からエラーへの変更）
 
 ## 直近の変更・決定事項
 
+- 命名規則統一のため、tools/extract_feature.py を tools/process_syllable.py にリネーム
+  - テストファイルも tools/test_extract_feature.py から tools/test_process_syllable.py に変更
+  - README も更新し、他の process\_\* 系ツールと命名を統一
 - テストの期待値を実際の出力に合わせて修正
   - phonemizer 出力の音素変更（「ᵻ」→「aɪ」）に対応
   - festival 出力のストレス値変更に対応
@@ -22,7 +25,7 @@
   - TextGrid ファイルの空のテキスト区間（ポーズ）を"(.)"として出力するように修正
 - tools/process*mfa.py を他の tools/process*\*.py と完全に同じ設計・書式・例外伝播に統一
 - validate_mfa_command で conda コマンド・mfa 環境・mfa コマンドの存在を事前検証
-- extract_feature.py で festival/phonemizer 両方の出力を統合する機能実装
+- process_syllable.py（旧 extract_feature.py）で festival/phonemizer 両方の出力を統合する機能実装
   - ストレス情報（stress）は同一シラブル内で必ず同じ値となる仕様を明文化・実装・テスト・ドキュメントで統一
 
 ## 次のステップ

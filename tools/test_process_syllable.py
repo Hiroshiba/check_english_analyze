@@ -1,6 +1,6 @@
 import pytest
 
-from tools.extract_feature import UnifiedPhonemeInfo, extract_feature
+from tools.process_syllable import UnifiedPhonemeInfo, extract_feature
 
 
 @pytest.mark.parametrize(

@@ -20,10 +20,10 @@ tools ディレクトリ配下の主要スクリプトは以下の通りです�
   PYTHONPATH=. uv run python tools/process_phonemizer.py "hello, world!"
   ```
 
-- `extract_feature.py`  
+- `process_syllable.py`  
   festival/phonemizer 両方の出力を統合し、音素・シラブル・単語・ストレス強弱を一括抽出
   ```
-  PYTHONPATH=. uv run python tools/extract_feature.py "hello, world!"
+  PYTHONPATH=. uv run python tools/process_syllable.py "hello, world!"
   ```
 
 ## 環境構築

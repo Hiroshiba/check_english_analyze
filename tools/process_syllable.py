@@ -1,11 +1,11 @@
 """
 英語テキストから音素・シラブル・ストレス情報をjsonで出力するツール。
 
-Usage:
-    PYTHONPATH=. uv run python tools/extract_feature.py "internationalization"
-    PYTHONPATH=. uv run python tools/extract_feature.py "hello, world!" --verbose
-
 ストレス情報は同一シラブル内で同じ値となる。
+
+Usage:
+    PYTHONPATH=. uv run python tools/process_syllable.py "internationalization"
+    PYTHONPATH=. uv run python tools/process_syllable.py "hello, world!" --verbose
 """
 
 import argparse

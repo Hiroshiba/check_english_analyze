@@ -11,10 +11,14 @@
   - `z` と `z` のマッピングを追加
   - `ih` と `aɪ` のマッピングを追加
   - カンマ（`,`）、感嘆符（`!`）、ピリオド（`.`）、疑問符（`?`）のマッピングを追加
-- extract_feature.py の改善
+- process_syllable.py（旧 extract_feature.py）の改善
   - ストレス情報は同一シラブル内で同じ値となる仕様を明文化・実装・テスト・ドキュメントで統一
   - 警告からエラーへの変更（不整合があった場合は例外を発生させる）
   - 音素列のアライメントに基づいて情報を統合するロジックの改善
+  - ファイル命名規則の統一
+    - tools/extract_feature.py を tools/process_syllable.py にリネーム
+    - tools/test_extract_feature.py を tools/test_process_syllable.py にリネーム
+    - 他の process\_\*系ファイルと命名規則を統一
 - コーディング規約・スタイルの徹底
   - 不要なコメントの削除
   - docstring の簡素化（Args/Returns セクションの削除）
@@ -40,7 +44,7 @@
   - prepare_corpus_dir 関数で既存のディレクトリを削除してから新規作成するように修正
   - run_mfa_align 関数で出力ディレクトリが存在する場合は事前に削除するように修正
   - TextGrid ファイルの空のテキスト区間（ポーズ）を"(.)"として出力するように修正
-- tools/process_festival.py, tools/process_phonemizer.py, tools/extract_feature.py で英語テキストの音素・シラブル・ストレス強弱等を抽出し、pydantic 型・logger・CLI/ロジック分離・pytest テスト・コーディング規約統一を徹底
+- tools/process_festival.py, tools/process_phonemizer.py, tools/process_syllable.py（旧 tools/extract_feature.py）で英語テキストの音素・シラブル・ストレス強弱等を抽出し、pydantic 型・logger・CLI/ロジック分離・pytest テスト・コーディング規約統一を徹底
 - tools/process*mfa.py を新規実装し、他の tools/process*\*.py と完全に同じ設計・書式・例外伝播に統一
 - validate_mfa_command で conda コマンド・mfa 環境・mfa コマンドの存在を事前検証し、エラー時は docs/mfa.md 参照を案内
 - argparse の nargs, help, description, print_help, sys.exit 等の細部まで統一
@@ -49,8 +53,8 @@
 - 既存 tools/process\_\*.py との一行単位の徹底比較・統一を実践
 - tools/process_festival.py で英語テキストから音素・シラブル・ストレス情報を Festival 経由で抽出し、word_index, phoneme_index, syllable_index を全体通し番号で付与し、pydantic 型・json 出力・logger/verbose 分離・pytest テストまで徹底
 - tools/process_phonemizer.py で英語テキストから音素・ストレス強弱情報を phonemizer+espeak 経由で抽出し、word_index, phoneme_index を全体通し番号で付与し、pydantic 型・logger・CLI/ロジック分離・pytest テストまで徹底
-- tools/extract_feature.py で festival/phonemizer 両方の出力を統合し、音素・シラブル・単語・ストレス強弱・各種インデックスを一括で返す関数を実装
-- tools/test_extract_feature.py で pytest.mark.parametrize による厳密なテストを追加し、期待値を実装出力に完全同期
+- tools/process_syllable.py（旧 tools/extract_feature.py）で festival/phonemizer 両方の出力を統合し、音素・シラブル・単語・ストレス強弱・各種インデックスを一括で返す関数を実装
+- tools/test_process_syllable.py（旧 tools/test_extract_feature.py）で pytest.mark.parametrize による厳密なテストを追加し、期待値を実装出力に完全同期
 - dict.json（festival/phonemizer 音素対応辞書）の運用ルールを厳格化し、未登録音素ペアの推定・難単語（20 語以上）を解析・追加
 - OS 自動判別（macOS: ./festival/bin/festival, Linux: festival）でクロスプラットフォーム対応
 - festival/phonemizer の Ubuntu/macOS セットアップ手順を docs/ に反映
@@ -64,7 +68,7 @@
 ## 残タスク
 
 - シラブル・音素・ストレス・単語情報を 1 コマンドで抽出する CLI/API の実装
-- ファイル出力機能や記号フィルタ機能など extract_feature.py の拡張
+- ファイル出力機能や記号フィルタ機能など process_syllable.py（旧 extract_feature.py）の拡張
 - phonemizer の高度な利用例やバックエンド切替の検証
 - CI/CD 強化や他言語対応の検討
 
