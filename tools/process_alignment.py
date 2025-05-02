@@ -7,7 +7,6 @@ Usage:
 """
 
 import argparse
-import glob
 import shutil
 import subprocess
 import tempfile
@@ -15,6 +14,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from utility.file_utility import expand_glob_pattern
 from utility.logger_utility import get_logger, logging_setting
 
 logger = get_logger(Path(__file__))
@@ -31,7 +31,8 @@ class LabEntry(BaseModel):
 def main() -> None:
     """コマンドライン引数から実行するエントリポイント"""
     text_glob, wav_glob, output_dir, verbose = parse_args()
-    alignment(text_glob, wav_glob, output_dir, verbose)
+    lab_dict = alignment(text_glob, wav_glob, verbose)
+    write_lab_files(lab_dict, output_dir)
 
 
 def parse_args(
@@ -62,13 +63,14 @@ def parse_args(
     return parsed.text_glob, parsed.wav_glob, parsed.output_dir, parsed.verbose
 
 
-def alignment(text_glob: str, wav_glob: str, output_dir: Path, verbose: bool) -> None:
-    """アライメント処理本体。labファイルのパスリストを返す"""
+def alignment(
+    text_glob: str, wav_glob: str, verbose: bool
+) -> dict[str, list[LabEntry]]:
+    """アライメント処理本体。各ファイル名ごとにLabEntryリストを返す"""
     logging_setting(level=10 if verbose else 20, to_stderr=True)
     logger.debug("verboseモード: ON")
     logger.debug(f"text_glob: {text_glob}")
     logger.debug(f"wav_glob: {wav_glob}")
-    logger.debug(f"output_dir: {output_dir}")
 
     text_paths = expand_glob_pattern(text_glob, "テキストファイル")
     wav_paths = expand_glob_pattern(wav_glob, "音声ファイル")
@@ -92,23 +94,22 @@ def alignment(text_glob: str, wav_glob: str, output_dir: Path, verbose: bool) ->
         align_result = run_mfa_align(corpus_dir, model_name, dict_name, textgrid_dir)
         logger.debug("MFAアライメント完了")
         logger.debug(f"MFA出力: {align_result}")
-        output_dir.mkdir(exist_ok=True)
-        lab_files: list[Path] = []
+        lab_dict: dict[str, list[LabEntry]] = {}
         for textgrid_file in textgrid_dir.glob("*.TextGrid"):
             logger.debug(f"TextGridファイル変換: {textgrid_file}")
             lab_entries = parse_textgrid_file(textgrid_file)
-            lab_path = output_dir / (textgrid_file.stem + ".lab")
-            write_lab_file(lab_entries, lab_path)
-            logger.debug(f"labファイル出力: {lab_path}")
-            lab_files.append(lab_path)
+            lab_dict[textgrid_file.stem] = lab_entries
+            logger.debug(f"phones: {[entry.phoneme for entry in lab_entries]}")
+        return lab_dict
 
 
-def expand_glob_pattern(pattern: str, file_type: str) -> list[Path]:
-    """globパターンを展開してPathオブジェクトのリストを返す"""
-    paths = [Path(p) for p in sorted(glob.glob(pattern))]
-    if not paths:
-        raise ValueError(f"{file_type}が見つかりません: {pattern}")
-    return paths
+def write_lab_files(lab_dict: dict[str, list[LabEntry]], output_dir: Path) -> None:
+    """LabEntryリストのdictをlabファイルとして出力する"""
+    output_dir.mkdir(exist_ok=True)
+    for stem, entries in lab_dict.items():
+        lab_path = output_dir / f"{stem}.lab"
+        write_lab_file(entries, lab_path)
+        logger.debug(f"labファイル出力: {lab_path}")
 
 
 def validate_file_counts(text_paths: list[Path], wav_paths: list[Path]) -> None:

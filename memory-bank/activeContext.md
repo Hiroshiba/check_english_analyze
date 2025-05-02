@@ -10,6 +10,12 @@
 
 ## 直近の変更・決定事項
 
+- tools/extract_feature.py を新規実装
+  - テキストと wav ファイルから音素・シラブル・ストレス・アライメント情報を結合した JSON を出力
+  - tools/process_syllable.py と tools/process_alignment.py の関数を統合活用
+  - 必ず先頭・末尾に無音要素を追加する設計に統一
+  - 音素不一致時は例外的にエラーではなく警告として処理し続行する仕様（NOTE コメントで明記）
+  - コーディングスタイルは process_alignment.py に合わせて実装
 - 命名規則統一のため、tools/extract_feature.py を tools/process_syllable.py にリネーム
   - テストファイルも tools/test_extract_feature.py から tools/test_process_syllable.py に変更
   - README も更新し、他の process\_\* 系ツールと命名を統一

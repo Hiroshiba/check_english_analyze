@@ -7,7 +7,6 @@ Usage:
 """
 
 import argparse
-import json
 import platform
 import subprocess
 from pathlib import Path
@@ -15,6 +14,7 @@ from pathlib import Path
 import sexpdata
 from pydantic import BaseModel
 
+from utility.json_utility import print_json_list
 from utility.logger_utility import get_logger, logging_setting
 
 logger = get_logger(Path(__file__))
@@ -35,7 +35,7 @@ def main():
     """コマンドライン引数から実行するエントリポイント"""
     text, verbose = parse_args()
     infos = festival(text, verbose)
-    print_phoneme_info(infos)
+    print_json_list(infos)
 
 
 def parse_args(args: list[str] | None = None) -> tuple[str, bool]:
@@ -196,13 +196,6 @@ def extract_sexp(output: str) -> list[PhonemeInfo]:
             phoneme_index += 1
             syllable_index += 1
     return infos
-
-
-def print_phoneme_info(infos: list[PhonemeInfo]) -> None:
-    """PhonemeInfoリストを見やすいJSONで標準出力する"""
-    print(
-        json.dumps([info.model_dump() for info in infos], ensure_ascii=False, indent=2)
-    )
 
 
 if __name__ == "__main__":

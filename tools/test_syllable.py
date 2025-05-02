@@ -1,6 +1,6 @@
 import pytest
 
-from tools.process_syllable import UnifiedPhonemeInfo, extract_feature
+from tools.process_syllable import UnifiedPhonemeInfo, process_syllables
 
 
 @pytest.mark.parametrize(
@@ -46,7 +46,7 @@ from tools.process_syllable import UnifiedPhonemeInfo, extract_feature
         ),
     ],
 )
-def test_extract_feature_param(
+def test_syllable_param(
     text,
     expected_words,
     expected_phonemes,
@@ -56,7 +56,7 @@ def test_extract_feature_param(
     expected_syllable_indexes,
 ):
     """extract_featureで音素・シラブル・ストレス・インデックス情報を取得し、期待値と比較"""
-    result = extract_feature(text, verbose=False)
+    result = process_syllables(text, verbose=False)
     assert isinstance(result, list)
     assert all(isinstance(x, UnifiedPhonemeInfo) for x in result)
 

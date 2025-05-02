@@ -9,7 +9,6 @@ Usage:
 """
 
 import argparse
-import json
 from collections import defaultdict
 from pathlib import Path
 
@@ -20,6 +19,7 @@ from tools.process_festival import PhonemeInfo as FestivalInfo
 from tools.process_festival import festival as run_festival
 from tools.process_phonemizer import PhonemeInfo as PhonemizerInfo
 from tools.process_phonemizer import phonemizer_espeak
+from utility.json_utility import print_json_list
 from utility.logger_utility import get_logger, logging_setting
 
 logger = get_logger(Path(__file__))
@@ -39,8 +39,8 @@ class UnifiedPhonemeInfo(BaseModel):
 def main() -> None:
     """コマンドライン引数から実行するエントリポイント"""
     text, verbose = parse_args()
-    result = extract_feature(text, verbose)
-    print_phoneme_info(result)
+    result = process_syllables(text, verbose)
+    print_json_list(result)
 
 
 def parse_args(args: list[str] | None = None) -> tuple[str, bool]:
@@ -54,7 +54,7 @@ def parse_args(args: list[str] | None = None) -> tuple[str, bool]:
     return parsed.text, parsed.verbose
 
 
-def extract_feature(text: str, verbose: bool) -> list[UnifiedPhonemeInfo]:
+def process_syllables(text: str, verbose: bool) -> list[UnifiedPhonemeInfo]:
     """英語テキストから音素・シラブル・ストレス情報を抽出しUnifiedPhonemeInfoリストで返す"""
     logging_setting(level=10 if verbose else 20, to_stderr=True)
     fest = run_festival(text, verbose)
@@ -143,17 +143,6 @@ def unify_stress_by_syllable(
             )
     unified_result.sort(key=lambda x: x.phoneme_index)
     return unified_result
-
-
-def print_phoneme_info(infos: list[UnifiedPhonemeInfo]) -> None:
-    """UnifiedPhonemeInfoリストを見やすいJSONで標準出力する"""
-    print(
-        json.dumps(
-            [info.model_dump() for info in infos],
-            ensure_ascii=False,
-            indent=2,
-        )
-    )
 
 
 if __name__ == "__main__":

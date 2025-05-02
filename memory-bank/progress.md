@@ -2,6 +2,13 @@
 
 ## 現状動作していること
 
+- tools/extract_feature.py を実装
+  - テキストと wav ファイルから音素・シラブル・ストレス・アライメント情報を結合
+  - AlignedPhonemeInfo モデルで型安全な情報管理
+  - add_silence_phonemes 関数で先頭・末尾に必ず無音要素を追加
+  - 音素不一致時は例外的に警告扱い（extract_feature.py のみ特例）
+  - lab_entries の start/end アライメント情報と統合
+  - process_syllable.py/process_alignment.py 関数を再利用し効率的に実装
 - festival と phonemizer の音素列を適切にアライメントするモジュール（tools/match_phonemes.py）を実装
   - 動的計画法を使用して最適なアライメントを計算
   - 1:1、1:多、多:1 の音素マッピングに対応

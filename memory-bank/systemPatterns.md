@@ -11,6 +11,13 @@
 
 ## 主要技術・設計パターン
 
+- 無音音素の必ず追加
+  - 音声認識結果（lab_entries）には先頭・末尾に無音区間が存在するが、テキスト解析結果にはない
+  - add_silence_phonemes 関数で UnifiedPhonemeInfo リストの先頭・末尾に必ず無音要素を追加し、データ構造を揃える
+  - これによりアライメント時の index 対応が単純化され、例外的な分岐や特別扱いを排除できる
+- 例外的エラー処理
+  - 通常は音素不一致はエラーとして raise するが、tools/extract_feature.py のみ例外的に警告として処理し続行する
+  - NOTE コメントで例外的措置であることを明記し、他ファイルとの設計意図の違いを明確化
 - festival: シラブル取得可・ストレス強弱不可
 - phonemizer+espeak: ストレス強弱取得可・シラブル不可
 - process_syllable.py（旧 extract_feature.py）で両者の出力を単語単位でマージし、全情報を統合

@@ -44,7 +44,7 @@ def test_match_phonemes_valid_cases(
 
 def test_match_phonemes_invalid_mapping():
     """存在しないマッピングの場合はValueErrorが発生することを確認"""
-    with pytest.raises(ValueError, match="対応するマッピングが見つかりません"):
+    with pytest.raises(ValueError, match="アライメント失敗"):
         match_phonemes(["xyz"], ["abc"])
 
 

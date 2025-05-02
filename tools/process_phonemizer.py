@@ -8,7 +8,6 @@ Usage:
 
 import argparse
 import glob
-import json
 import os
 import platform
 import re
@@ -18,6 +17,7 @@ from phonemizer import phonemize
 from phonemizer.separator import Separator
 from pydantic import BaseModel
 
+from utility.json_utility import print_json_list
 from utility.logger_utility import get_logger, logging_setting
 
 logger = get_logger(Path(__file__))
@@ -37,7 +37,7 @@ def main() -> None:
     """コマンドライン引数から実行するエントリポイント"""
     text, verbose = parse_args()
     infos = phonemizer_espeak(text, verbose)
-    print_phoneme_info(infos)
+    print_json_list(infos)
 
 
 def parse_args(args: list[str] | None = None) -> tuple[str, bool]:
@@ -121,17 +121,6 @@ def parse_phoneme(p: str, orig_word: str) -> list[tuple[str, int, str]]:
         else:
             result.append((base, stress, orig_word))
     return result
-
-
-def print_phoneme_info(infos: list[PhonemeInfo]) -> None:
-    """PhonemeInfoリストを見やすいJSONで標準出力する"""
-    print(
-        json.dumps(
-            [info.model_dump() for info in infos],
-            ensure_ascii=False,
-            indent=2,
-        )
-    )
 
 
 def set_espeak_library_for_macos() -> None:
