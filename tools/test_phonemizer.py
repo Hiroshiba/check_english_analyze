@@ -21,7 +21,7 @@ from tools.process_phonemizer import PhonemeInfo, phonemizer_espeak
                 "n",
                 "ə",
                 "l",
-                "ᵻ",
+                "aɪ",
                 "z",
                 "eɪ",
                 "ʃ",
