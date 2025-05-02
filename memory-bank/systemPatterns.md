@@ -7,6 +7,7 @@
 - logger/verbose/標準出力分離
 - クロスプラットフォーム（Ubuntu, macOS）対応
 - festival/phonemizer の出力を組み合わせて「音素・シラブル・単語・ストレス強弱」を一括抽出（extract_feature.py）
+- 音素列のアライメントを行うモジュール（match_phonemes.py）による統合処理
 
 ## 主要技術・設計パターン
 
@@ -21,8 +22,10 @@
 
 - tools/process_festival.py: festival 出力の S 式パース・シラブル抽出
 - tools/process_phonemizer.py: phonemizer 出力のストレス強弱抽出
+- tools/match_phonemes.py: festival と phonemizer の音素列をアライメントするモジュール
 - tools/extract_feature.py: 両出力を単語単位でマージし、pydantic 型で返す統合ロジック
-- tools/test_festival.py, tools/test_phonemizer.py, tools/test_extract_feature.py: pytest パラメータ化・期待値明示・assert 順統一
+- tools/symbol_mapping.json: festival と phonemizer の音素マッピング定義
+- tools/test_festival.py, tools/test_phonemizer.py, tools/test_match_phonemes.py, tools/test_extract_feature.py: pytest パラメータ化・期待値明示・assert 順統一
 - utility/logger_utility.py: logger 生成・設定
 - docs/: セットアップ・利用手順
 - README.md: 主要ツールの使い方・依存ライブラリの紹介

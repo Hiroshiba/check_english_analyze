@@ -6,11 +6,13 @@ Usage:
     PYTHONPATH=. uv run python tools/extract_feature.py "hello, world!" --verbose
 """
 
+import argparse
 import json
 from pathlib import Path
 
 from pydantic import BaseModel
 
+from tools.match_phonemes import match_phonemes
 from tools.process_festival import PhonemeInfo as FestivalInfo
 from tools.process_festival import festival as run_festival
 from tools.process_phonemizer import PhonemeInfo as PhonemizerInfo
@@ -40,8 +42,6 @@ def main() -> None:
 
 def parse_args(args: list[str] | None = None) -> tuple[str, bool]:
     """コマンドライン引数からテキストとverboseを取得する"""
-    import argparse
-
     parser = argparse.ArgumentParser()
     parser.add_argument("text", type=str, help="解析するテキスト")
     parser.add_argument(
@@ -57,20 +57,51 @@ def extract_feature(text: str, verbose: bool) -> list[UnifiedPhonemeInfo]:
     fest = run_festival(text, verbose)
     phnm = phonemizer_espeak(text, verbose)
 
-    validate(fest, phnm, verbose)
+    fest_by_word = group_by_word(fest)
+    phnm_by_word = group_by_word(phnm)
 
     result: list[UnifiedPhonemeInfo] = []
-    for f, p in zip(fest, phnm, strict=False):
-        result.append(
-            UnifiedPhonemeInfo(
-                word=f.word,
-                word_index=f.word_index,
-                syllable_index=f.syllable_index,
-                phoneme=p.phoneme,
-                phoneme_index=f.phoneme_index,
-                stress=p.stress,
+    for word in fest_by_word.keys():
+        if word not in phnm_by_word:
+            raise ValueError(f"単語 '{word}' がphonemizer出力に見つかりません")
+
+        fest_phonemes = [f.phoneme for f in fest_by_word[word]]
+        phnm_phonemes = [p.phoneme for p in phnm_by_word[word]]
+
+        try:
+            alignments = match_phonemes(fest_phonemes, phnm_phonemes)
+        except ValueError as e:
+            raise ValueError(
+                f"単語 '{word}' の音素アライメントに失敗しました。symbol_mapping.jsonを確認してください。"
+            ) from e
+
+        for fest_idx, phnm_idx in alignments:
+            f = fest_by_word[word][fest_idx]
+            p = phnm_by_word[word][phnm_idx]
+            result.append(
+                UnifiedPhonemeInfo(
+                    word=f.word,
+                    word_index=f.word_index,
+                    syllable_index=f.syllable_index,
+                    phoneme=p.phoneme,
+                    phoneme_index=f.phoneme_index,
+                    stress=p.stress,
+                )
             )
-        )
+
+    result.sort(key=lambda x: x.phoneme_index)
+    return result
+
+
+def group_by_word(
+    phoneme_infos: list[FestivalInfo] | list[PhonemizerInfo],
+) -> dict[str, list]:
+    """音素情報を単語ごとにグループ化する"""
+    result: dict[str, list] = {}
+    for info in phoneme_infos:
+        if info.word not in result:
+            result[info.word] = []
+        result[info.word].append(info)
     return result
 
 
@@ -83,31 +114,6 @@ def print_phoneme_info(infos: list[UnifiedPhonemeInfo]) -> None:
             indent=2,
         )
     )
-
-
-def validate(
-    fest: list[FestivalInfo], phnm: list[PhonemizerInfo], verbose: bool
-) -> None:
-    """festival/phonemizerの単語・インデックス情報が一致しているか検証し、不一致なら詳細な例外を投げる"""
-    if len(fest) != len(phnm):
-        logger.debug("festival側: " + str([(f.word, f.phoneme) for f in fest]))
-        logger.debug("phonemizer側: " + str([(p.word, p.phoneme) for p in phnm]))
-        raise ValueError(
-            f"festival/phonemizerの要素数が一致しません: festival={len(fest)}, phonemizer={len(phnm)}"
-        )
-    for i, (f, p) in enumerate(zip(fest, phnm, strict=False)):
-        if f.word != p.word:
-            raise ValueError(
-                f"word不一致 at index {i}: festival='{f.word}', phonemizer='{p.word}'"
-            )
-        if f.word_index != p.word_index:
-            raise ValueError(
-                f"word_index不一致 at index {i}: festival={f.word_index}, phonemizer={p.word_index}"
-            )
-        if f.phoneme_index != p.phoneme_index:
-            raise ValueError(
-                f"phoneme_index不一致 at index {i}: festival={f.phoneme_index}, phonemizer={p.phoneme_index}"
-            )
 
 
 if __name__ == "__main__":

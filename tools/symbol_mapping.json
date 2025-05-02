@@ -28,6 +28,7 @@
   { "festival": ["g"], "phonemizer": ["k"] },
   { "festival": ["hh"], "phonemizer": ["h"] },
   { "festival": ["ih"], "phonemizer": ["ɪ"] },
+  { "festival": ["ih"], "phonemizer": ["aɪ"] },
   { "festival": ["iy"], "phonemizer": ["iː"] },
   { "festival": ["iy"], "phonemizer": ["i"] },
   { "festival": ["iy"], "phonemizer": ["ɪ"] },
@@ -54,6 +55,7 @@
   { "festival": ["v"], "phonemizer": ["v"] },
   { "festival": ["w"], "phonemizer": ["w"] },
   { "festival": ["y"], "phonemizer": ["j"] },
+  { "festival": ["z"], "phonemizer": ["z"] },
   { "festival": ["zh"], "phonemizer": ["ʒ"] },
   { "festival": ["zh"], "phonemizer": ["ʃ"] },
 
@@ -71,5 +73,10 @@
   { "festival": ["y", "ax"], "phonemizer": ["iə"] },
   { "festival": ["er"], "phonemizer": ["ʌ", "ɹ"] },
   { "festival": ["ay", "er"], "phonemizer": ["aɪɚ"] },
-  { "festival": ["uh", "r"], "phonemizer": ["ʊɹ"] }
+  { "festival": ["uh", "r"], "phonemizer": ["ʊɹ"] },
+
+  { "festival": [","], "phonemizer": [","] },
+  { "festival": ["!"], "phonemizer": ["!"] },
+  { "festival": ["."], "phonemizer": ["."] },
+  { "festival": ["?"], "phonemizer": ["?"] }
 ]

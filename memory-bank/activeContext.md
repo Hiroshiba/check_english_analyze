@@ -2,11 +2,11 @@
 
 ## 現在の作業フォーカス
 
-- Montreal Forced Aligner（MFA）ラッパー（tools/process_mfa.py）の設計・実装・コーディング規約統一
-- validate_mfa_command による conda/mfa 環境/コマンドの事前検証・明確なエラー案内
-- festival/phonemizer の出力を組み合わせて「音素・シラブル・単語・ストレス強弱」をすべて得る統合ロジックの設計・実装（extract_feature.py）
-- 統合出力のための pydantic 型設計・pytest.mark.parametrize によるテストケース設計・期待値明示（test_extract_feature.py）
-- dict.json（festival/phonemizer 音素対応辞書）の拡充・難単語解析・未登録音素ペアの追加運用
+- festival と phonemizer の音素列を適切にアライメントするモジュール（tools/match_phonemes.py）の設計・実装
+- 音素列のアライメントに基づいて情報を統合するロジックの改善（tools/extract_feature.py）
+- symbol_mapping.json の拡充・音素マッピングの追加
+- コーディング規約・スタイルの徹底（不要なコメント削除、docstring 簡素化、例外処理の統一）
+- 不整合があった場合のエラー処理の改善（警告からエラーへの変更）
 
 ## 直近の変更・決定事項
 
