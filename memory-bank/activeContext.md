@@ -2,6 +2,10 @@
 
 ## 現在の作業フォーカス
 
+- GitHub Actions のワークフローファイル（.github/workflows/test.yml）の作成・設定
+- Linux 環境でのテスト実行の安定化
+- テストコードを Linux 環境に合わせて修正
+- スナップショットテストの更新
 - festival と phonemizer の音素列を適切にアライメントするモジュール（tools/match_phonemes.py）の設計・実装
 - 音素列のアライメントに基づいて情報を統合するロジックの改善（tools/process_syllable.py）
 - symbol_mapping.json の拡充・音素マッピングの追加
@@ -12,6 +16,15 @@
 
 ## 直近の変更・決定事項
 
+- GitHub Actions のワークフローファイル（.github/workflows/test.yml）を作成
+  - すべてのブランチを対象に、push するたびにテストを実行するよう設定
+  - リント・フォーマットのチェックを実行
+  - VOICEVOX_engine のワークフローを参考に命名規則を統一
+- Linux 環境でのテスト実行に対応するため、テストコードを修正
+  - tools/test_festival.py のシラブルインデックスを修正
+  - tools/test_phonemizer.py の音素表現を修正（`'aɪ'`を`'ᵻ'`に変更）
+  - tools/test_syllable.py の音素表現とシラブルインデックスを修正
+  - tools/**snapshots**/test_extract_feature/test_extract_aligned_feature_with_real_data.json のスナップショットを更新
 - tools/extract_feature.py を新規実装
   - テキストと wav ファイルから音素・シラブル・ストレス・アライメント情報を結合した JSON を出力
   - tools/process_syllable.py と tools/process_alignment.py の関数を統合活用
@@ -43,6 +56,11 @@
 
 ## 次のステップ
 
+- CI の安定化と拡張
+  - テストカバレッジの追加
+  - コードフォーマットチェックの追加
+  - 型チェックの追加
+- Linux と macOS の環境差異を吸収するテスト設計の改善
 - 他の CLI 追加時も既存 tools/process\_\*.py と一行単位で徹底比較し、完全統一を最初から実現
 - validate 系の設計・案内文も最初に方針を決めて実装
 - ドキュメント・エラー案内も最小限・統一化を徹底
@@ -52,6 +70,7 @@
 
 - 外部ライブラリの出力変更に柔軟に対応するテスト設計
 - テスト期待値は実際の出力に合わせて更新し、CI/テストの安定性を確保
+- OS 間の差異（Linux/macOS）を吸収するテスト設計
 
 - CLI/ロジック分離・型安全・docstring・logger 設計・例外処理の徹底
 - validate_mfa_command 等による事前検証・明確なエラー案内
