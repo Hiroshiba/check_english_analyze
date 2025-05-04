@@ -2,6 +2,7 @@
 
 ## 現在の作業フォーカス
 
+- match_phonemes.py のバグ修正および音素アライメントロジックの堅牢化
 - GitHub Actions のワークフローファイル（.github/workflows/test.yml）の作成・設定
 - Linux 環境でのテスト実行の安定化
 - テストコードを Linux 環境に合わせて修正
@@ -16,6 +17,11 @@
 
 ## 直近の変更・決定事項
 
+- match_phonemes.py のバグ修正を実施
+  - 音素マッピングが存在しない（または不十分な）場合でもエラーを発生させない問題を修正
+  - 最終アライメントのスコア（`final_score`）を評価し、スコアが 0 以下の場合は ValueError を発生させるように変更
+  - `test_match_phonemes_invalid_mapping`テストが正常に通るようになった
+  - 存在しないマッピングに対して確実にエラーが発生するようになり、システムの堅牢性が向上
 - GitHub Actions のワークフローファイル（.github/workflows/test.yml）を作成
   - すべてのブランチを対象に、push するたびにテストを実行するよう設定
   - リント・フォーマットのチェックを実行

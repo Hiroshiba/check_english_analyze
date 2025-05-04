@@ -173,8 +173,10 @@ def align_phonemes(
             dp[i][j] = (best_score, best_prev, best_pairs)
 
     alignment = dp[len(festival_phonemes)][len(phonemizer_phonemes)][2]
+    final_score = dp[len(festival_phonemes)][len(phonemizer_phonemes)][0]
 
-    if not alignment and (festival_phonemes or phonemizer_phonemes):
+    # 有効なマッピングが不十分な場合（スコアが0以下）はエラーを発生させる
+    if not alignment or final_score <= 0:
         raise ValueError(
             f"アライメント失敗: festival={festival_phonemes}, phonemizer={phonemizer_phonemes}"
         )

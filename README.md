@@ -62,7 +62,7 @@ uv run ruff check --fix && uv run ruff format
 #### 通常のテスト実行
 
 ```sh
-PYTHONPATH=. uv run pytest
+PYTHONPATH=. uv run pytest -sv
 ```
 
 #### スナップショットテスト
@@ -71,7 +71,7 @@ syrupy を使ったスナップショットテストを導入しています。
 初回または出力仕様変更時は以下のコマンドでスナップショットを更新してください：
 
 ```sh
-PYTHONPATH=. uv run pytest --snapshot-update
+PYTHONPATH=. uv run pytest -sv --snapshot-update
 ```
 
 ## 依存ライブラリの紹介

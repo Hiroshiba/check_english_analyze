@@ -2,6 +2,10 @@
 
 ## 現状動作していること
 
+- match_phonemes.py のバグを修正
+  - 無効な音素ペア（マッピングが存在しないペア）があった場合に確実にエラーを発生させるように修正
+  - アライメントの最終スコア（`final_score`）を評価し、0 以下の場合は ValueError を発生
+  - `test_match_phonemes_invalid_mapping`テストが正常に通るようになり、システムの堅牢性が向上
 - GitHub Actions のワークフローファイル（.github/workflows/test.yml）を作成
   - すべてのブランチを対象に、push するたびにテストを実行するよう設定
   - リント・フォーマットのチェックを実行
