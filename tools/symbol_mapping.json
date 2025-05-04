@@ -29,6 +29,7 @@
   { "festival": ["hh"], "phonemizer": ["h"] },
   { "festival": ["ih"], "phonemizer": ["ɪ"] },
   { "festival": ["ih"], "phonemizer": ["aɪ"] },
+  { "festival": ["ih"], "phonemizer": ["ᵻ"] },
   { "festival": ["iy"], "phonemizer": ["iː"] },
   { "festival": ["iy"], "phonemizer": ["i"] },
   { "festival": ["iy"], "phonemizer": ["ɪ"] },

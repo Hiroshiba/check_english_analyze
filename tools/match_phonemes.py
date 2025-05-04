@@ -20,6 +20,7 @@ def match_phonemes(
 
     mapping_dict = load_symbol_mapping()
     alignment = align_phonemes(festival_phonemes, phonemizer_phonemes, mapping_dict)
+    verify_complete_alignment(alignment, festival_phonemes, phonemizer_phonemes)
     return alignment
 
 
@@ -182,3 +183,22 @@ def align_phonemes(
         )
 
     return alignment
+
+
+def verify_complete_alignment(
+    alignment: list[tuple[int, int]],
+    festival_phonemes: list[str],
+    phonemizer_phonemes: list[str],
+) -> None:
+    """アライメントが両方の音素列を完全にカバーしているか検証する"""
+    aligned_fest_indices = {pair[0] for pair in alignment}
+    aligned_phnm_indices = {pair[1] for pair in alignment}
+
+    if len(aligned_fest_indices) != len(festival_phonemes) or len(
+        aligned_phnm_indices
+    ) != len(phonemizer_phonemes):
+        raise ValueError(
+            f"アライメント失敗: 不完全なアライメント。 "
+            f"Festival: {len(aligned_fest_indices)}/{len(festival_phonemes)}, "
+            f"Phonemizer: {len(aligned_phnm_indices)}/{len(phonemizer_phonemes)}"
+        )
