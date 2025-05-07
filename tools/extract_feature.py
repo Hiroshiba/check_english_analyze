@@ -2,8 +2,8 @@
 テキストとwavファイルから、音素・シラブル・ストレス・アライメント情報を結合したjsonファイルを出力するツール。
 
 Usage:
-    PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output
-    PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output --verbose
+    PYTHONPATH=. uv run python tools/extract_feature.py --text-glob "tools/data/*.txt" --wav-glob "tools/data/*.wav" --output-dir ./hiho_aligned_output
+    PYTHONPATH=. uv run python tools/extract_feature.py --text-glob "tools/data/*.txt" --wav-glob "tools/data/*.wav" --output-dir ./hiho_aligned_output --verbose
 """
 
 from pathlib import Path
@@ -38,12 +38,18 @@ class AlignedPhonemeInfo(BaseModel):
 def main(
     text_glob: Annotated[
         str,
-        typer.Argument(help="テキストファイルのglobパターン（例: tools/data/*.txt）"),
+        typer.Option(
+            ..., help="テキストファイルのglobパターン（例: tools/data/*.txt）"
+        ),
     ],
     wav_glob: Annotated[
-        str, typer.Argument(help="音声ファイルのglobパターン（例: tools/data/*.wav）")
+        str,
+        typer.Option(..., help="音声ファイルのglobパターン（例: tools/data/*.wav）"),
     ],
-    output_dir: Annotated[Path, typer.Argument(help="出力先ディレクトリ")],
+    output_dir: Annotated[
+        Path,
+        typer.Option(..., help="出力先ディレクトリ"),
+    ],
     output_textgrid_dir: Annotated[
         Path | None,
         typer.Option(
@@ -69,7 +75,6 @@ def extract_aligned_feature(
     output_textgrid_dir: Path | None = None,
 ) -> dict[str, list[AlignedPhonemeInfo]]:
     """音素・シラブル・ストレス・アライメント情報を抽出しファイル名ごとに返す"""
-    logger.debug("verboseモード: ON")
     logger.debug(f"text_glob: {text_glob}")
     logger.debug(f"wav_glob: {wav_glob}")
 

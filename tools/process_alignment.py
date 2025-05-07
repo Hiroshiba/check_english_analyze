@@ -2,8 +2,8 @@
 英語音声ファイルとテキストファイルを元に音素アライメントのlabファイルを出力するツール。
 
 Usage:
-    PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output
-    PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output --output_textgrid --verbose
+    PYTHONPATH=. uv run python tools/process_alignment.py --text-glob "tools/data/*.txt" --wav-glob "tools/data/*.wav" --output-dir ./hiho_aligned_output
+    PYTHONPATH=. uv run python tools/process_alignment.py --text-glob "tools/data/*.txt" --wav-glob "tools/data/*.wav" --output-dir ./hiho_aligned_output --output_textgrid --verbose
 """
 
 import tempfile
@@ -33,12 +33,22 @@ logger = get_logger(Path(__file__))
 def main(
     text_glob: Annotated[
         str,
-        typer.Argument(help="テキストファイルのglobパターン（例: tools/data/*.txt）"),
+        typer.Option(
+            ...,
+            help="テキストファイルのglobパターン（例: tools/data/*.txt）",
+        ),
     ],
     wav_glob: Annotated[
-        str, typer.Argument(help="音声ファイルのglobパターン（例: tools/data/*.wav）")
+        str,
+        typer.Option(
+            ...,
+            help="音声ファイルのglobパターン（例: tools/data/*.wav）",
+        ),
     ],
-    output_dir: Annotated[Path, typer.Argument(help="出力先ディレクトリ")],
+    output_dir: Annotated[
+        Path,
+        typer.Option(..., help="出力先ディレクトリ"),
+    ],
     output_textgrid_dir: Annotated[
         Path | None,
         typer.Option(
@@ -61,7 +71,6 @@ def alignment(
     output_textgrid_dir: Path | None = None,
 ) -> dict[str, list[LabEntry]]:
     """アライメント処理本体。各ファイル名ごとにLabEntryリストを返す"""
-    logger.debug("verboseモード: ON")
     logger.debug(f"text_glob: {text_glob}")
     logger.debug(f"wav_glob: {wav_glob}")
 

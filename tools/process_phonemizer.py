@@ -48,7 +48,6 @@ def main(
 
 def phonemizer_espeak(text: str) -> list[PhonemeInfo]:
     """英語テキストから音素・ストレス情報を抽出しPhonemeInfoリストで返す"""
-    logger.debug("verboseモード: ON")
     logger.debug(f"text: {text}")
 
     words = split_words(text)

@@ -78,6 +78,7 @@
 - `tools/conftest.py`に`pytest_configure`フックを追加し、pytest の verbosity（`-v`オプションの有無）に応じてログレベルを設定するように変更。
 - `tools/extract_feature.py`と`tools/process_alignment.py`のコマンドライン引数に`--output_textgrid_dir`を追加し、TextGrid ファイルの出力先を任意で指定できるように変更。
 - `tools`ディレクトリ以下の CLI ツール（`extract_feature.py`, `process_alignment.py`, `process_festival.py`, `process_phonemizer.py`, `process_syllable.py`）に`typer`を導入し、`argparse`を置き換え。
+- 上記 CLI ツールのうち、`process_festival.py`, `process_phonemizer.py`, `process_syllable.py` の `text` 引数を `typer.Argument` に修正し、Usage 通りの動作を保証。`process_alignment.py`, `extract_feature.py` は `typer.Option` のまま変更なし。
 
 ## 次のステップ
 

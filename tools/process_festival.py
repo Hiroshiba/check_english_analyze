@@ -46,7 +46,6 @@ def main(
 
 def festival(text: str) -> list[PhonemeInfo]:
     """英語テキストから音素・シラブル・ストレス情報を抽出しPhonemeInfoリストで返す"""
-    logger.debug("verboseモード: ON")
     script = build_festival_script(text)
     output = run_festival(script)
     infos = extract_sexp(output)
