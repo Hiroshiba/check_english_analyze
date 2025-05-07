@@ -28,7 +28,7 @@
 - phonemizer+espeak: ストレス強弱取得可・シラブル不可
 - match_phonemes.py で両者の音素列を適切にアライメント
 - process_syllable.py（旧 extract_feature.py）で両者の出力を単語単位でマージし、「音素・シラブル・単語・ストレス強弱」を一括抽出
-- symbol_mapping.json で音素マッピングを定義し、1:1、1:多、多:1 の対応関係を管理
+- symbol_mapping.json で音素マッピングを定義し、1:1、1:多、多:1 の対応関係を管理（festival 要素数 1/2/記号ごとにブロック分割しアルファベット順でソート、網羅性を維持）
 - 統合出力は pydantic 型で厳密に管理し、テスト期待値も明示
 
 ### コーディング規約

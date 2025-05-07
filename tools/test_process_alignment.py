@@ -1,3 +1,6 @@
+import tempfile
+from pathlib import Path
+
 from syrupy.assertion import SnapshotAssertion
 
 from tools.process_alignment import alignment
@@ -7,5 +10,8 @@ def test_alignment_with_real_data(snapshot: SnapshotAssertion):
     """tools/data/*.txt, *.wavを使ってalignment関数の出力をスナップショットテスト"""
     text_glob = "tools/data/*.txt"
     wav_glob = "tools/data/*.wav"
-    result = alignment(text_glob, wav_glob, verbose=False)
-    assert result == snapshot
+    with tempfile.TemporaryDirectory() as temp_dir:
+        result = alignment(
+            text_glob, wav_glob, Path(temp_dir), verbose=False, output_textgrid=False
+        )
+        assert result == snapshot

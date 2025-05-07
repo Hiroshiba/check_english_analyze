@@ -3,7 +3,7 @@
 
 Usage:
     PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output
-    PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output --verbose
+    PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output --output_textgrid --verbose
 """
 
 import argparse
@@ -30,15 +30,13 @@ class LabEntry(BaseModel):
 
 def main() -> None:
     """コマンドライン引数から実行するエントリポイント"""
-    text_glob, wav_glob, output_dir, verbose = parse_args()
-    lab_dict = alignment(text_glob, wav_glob, verbose)
+    text_glob, wav_glob, output_dir, verbose, output_textgrid = parse_args()
+    lab_dict = alignment(text_glob, wav_glob, output_dir, verbose, output_textgrid)
     write_lab_files(lab_dict, output_dir)
 
 
-def parse_args(
-    args: list[str] | None = None,
-) -> tuple[str, str, Path, bool]:
-    """コマンドライン引数からtext_glob, wav_glob, output_dir, verboseを取得する"""
+def parse_args() -> tuple[str, str, Path, bool, bool]:
+    """コマンドライン引数からtext_glob, wav_glob, output_dir, verbose, output_textgridを取得する"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--text_glob",
@@ -59,12 +57,27 @@ def parse_args(
     parser.add_argument(
         "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
     )
-    parsed = parser.parse_args(args)
-    return parsed.text_glob, parsed.wav_glob, parsed.output_dir, parsed.verbose
+    parser.add_argument(
+        "--output_textgrid",
+        action="store_true",
+        help="TextGridファイルを出力ディレクトリにコピーする",
+    )
+    parsed = parser.parse_args()
+    return (
+        parsed.text_glob,
+        parsed.wav_glob,
+        parsed.output_dir,
+        parsed.verbose,
+        parsed.output_textgrid,
+    )
 
 
 def alignment(
-    text_glob: str, wav_glob: str, verbose: bool
+    text_glob: str,
+    wav_glob: str,
+    output_dir: Path,
+    verbose: bool,
+    output_textgrid: bool,
 ) -> dict[str, list[LabEntry]]:
     """アライメント処理本体。各ファイル名ごとにLabEntryリストを返す"""
     logging_setting(level=10 if verbose else 20, to_stderr=True)
@@ -100,6 +113,8 @@ def alignment(
             lab_entries = parse_textgrid_file(textgrid_file)
             lab_dict[textgrid_file.stem] = lab_entries
             logger.debug(f"phones: {[entry.phoneme for entry in lab_entries]}")
+        if output_textgrid:
+            copy_textgrid_files(textgrid_dir, output_dir)
         return lab_dict
 
 
@@ -110,6 +125,19 @@ def write_lab_files(lab_dict: dict[str, list[LabEntry]], output_dir: Path) -> No
         lab_path = output_dir / f"{stem}.lab"
         write_lab_file(entries, lab_path)
         logger.debug(f"labファイル出力: {lab_path}")
+
+
+def copy_textgrid_files(textgrid_dir: Path, output_dir: Path) -> None:
+    """TextGridファイルをコピーする"""
+    output_dir.mkdir(exist_ok=True)
+    for textgrid_file in textgrid_dir.glob("*.TextGrid"):
+        dst = output_dir / textgrid_file.name
+        try:
+            shutil.copy2(textgrid_file, dst)
+        except Exception as e:
+            raise RuntimeError(
+                f"TextGridファイルのコピーに失敗: {textgrid_file}"
+            ) from e
 
 
 def validate_file_counts(text_paths: list[Path], wav_paths: list[Path]) -> None:

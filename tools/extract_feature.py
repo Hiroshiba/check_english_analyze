@@ -36,7 +36,9 @@ class AlignedPhonemeInfo(BaseModel):
 def main() -> None:
     """コマンドライン引数から実行するエントリポイント"""
     text_glob, wav_glob, output_dir, verbose = parse_args()
-    phoneme_dict = extract_aligned_feature(text_glob, wav_glob, verbose)
+    phoneme_dict = extract_aligned_feature(
+        text_glob, wav_glob, output_dir, verbose, output_textgrid=False
+    )
     for stem, infos in phoneme_dict.items():
         json_path = Path(output_dir) / f"{stem}.json"
         write_json_list(infos, json_path)
@@ -70,7 +72,11 @@ def parse_args(args: list[str] | None = None) -> tuple[str, str, Path, bool]:
 
 
 def extract_aligned_feature(
-    text_glob: str, wav_glob: str, verbose: bool
+    text_glob: str,
+    wav_glob: str,
+    output_dir: Path,
+    verbose: bool,
+    output_textgrid: bool,
 ) -> dict[str, list[AlignedPhonemeInfo]]:
     """音素・シラブル・ストレス・アライメント情報を抽出しファイル名ごとに返す"""
     logging_setting(level=10 if verbose else 20, to_stderr=True)
@@ -85,7 +91,7 @@ def extract_aligned_feature(
             f"テキストファイルと音声ファイルの数が一致しません: text_paths={len(text_paths)}, wav_paths={len(wav_paths)}"
         )
 
-    lab_dict = alignment(text_glob, wav_glob, verbose)
+    lab_dict = alignment(text_glob, wav_glob, output_dir, verbose, output_textgrid)
     phoneme_dict: dict[str, list[AlignedPhonemeInfo]] = {}
 
     for text_path in text_paths:

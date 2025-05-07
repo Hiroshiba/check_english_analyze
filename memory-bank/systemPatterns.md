@@ -39,7 +39,7 @@
   - verify_complete_alignment: アライメントが両方の音素列を完全にカバーしているか検証
   - match_phonemes: メイン関数として処理と検証を統括
 - tools/process_syllable.py（旧 tools/extract_feature.py）: 両出力を単語単位でマージし、pydantic 型で返す統合ロジック
-- tools/symbol_mapping.json: festival と phonemizer の音素マッピング定義
+- tools/symbol_mapping.json: festival と phonemizer の音素マッピング定義（festival 要素数 1/2/記号ごとにブロック分割しアルファベット順でソート、網羅性を維持）
 - tools/test_festival.py, tools/test_phonemizer.py, tools/test_match_phonemes.py, tools/test_process_syllable.py（旧 tools/test_extract_feature.py）: pytest パラメータ化・期待値明示・assert 順統一
 - utility/logger_utility.py: logger 生成・設定
 - docs/: セットアップ・利用手順

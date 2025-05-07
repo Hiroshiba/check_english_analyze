@@ -11,14 +11,17 @@
 - スナップショットテストの更新
 - festival と phonemizer の音素列を適切にアライメントするモジュール（tools/match_phonemes.py）の設計・実装
 - 音素列のアライメントに基づいて情報を統合するロジックの改善（tools/process_syllable.py）
-- symbol_mapping.json の拡充・音素マッピングの追加
-- コーディング規約・スタイルの徹底（不要なコメント削除、docstring 簡素化、例外処理の統一）
+- symbol_mapping.json の大規模拡充・音素マッピングの追加・アルファベット順ソート・記号/複数音素/単音素ブロック分割
+- コーディング規約・スタイルの徹底（不要なコメント削除、docstring 簡素化、例外処理の統一、マッピングファイルの網羅性・ソート方針の徹底）
 - 不整合があった場合のエラー処理の改善（警告からエラーへの変更）
 - tools/process_alignment.py, tools/extract_feature.py に対する syrupy スナップショットテストの実装・運用
+- process_syllable.py のストレス検証ロジックを「全て 0 か、連続する 1 もしくは 2 が 1 度のみ現れてそれ以外が 0 か」を許容する仕様に修正
 - 実データ（tools/data/_.txt, _.wav）を使った統合的な出力検証
 
 ## 直近の変更・決定事項
 
+- symbol_mapping.json の大規模拡充・ソート（festival 要素数/記号ごとにブロック分割しアルファベット順に整理）
+- process_syllable.py のストレス検証ロジックを「全て 0 か、連続する 1 もしくは 2 が 1 度のみ現れてそれ以外が 0 か」を許容する仕様に修正
 - match_phonemes.py のバグ修正を実施
   - 音素マッピングが存在しない（または不十分な）場合でもエラーを発生させない問題を修正
   - 最終アライメントのスコア（`final_score`）を評価し、スコアが 0 以下の場合は ValueError を発生させるように変更
