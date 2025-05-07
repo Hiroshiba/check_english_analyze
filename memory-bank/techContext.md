@@ -6,11 +6,12 @@
 - phonemizer（PyPI, uv/pip）
 - espeak（apt/brew, phonemizer バックエンド用）
 - pytest（自動テスト、parametrize によるパターン網羅）
+  - `tools/conftest.py`: pytest の設定（JSON スナップショット用 fixture、ログレベル設定など）
 - ruff（静的解析・フォーマット）
 - pydantic（型安全、データ構造厳密化）
 - sexpdata（S 式パース）
 - uv（Python パッケージ管理）
-- 独自 logger（utility/logger_utility.py）
+- 独自 logger（`utility/logger_utility.py`の`logging_setting`関数で一元管理）
 
 ## 開発環境・セットアップ
 
@@ -53,6 +54,10 @@
 - pytest.mark.parametrize によるテスト網羅
 - festival/phonemizer の出力仕様変更に追従できる型設計・テスト設計
 - テスト・assert・パターン順序・docstring・引数順も全ファイルで統一
+- ロギング設定の統一
+  - `utility/logger_utility.py`の`logging_setting`関数で一元管理。
+  - 各スクリプトの`main`関数や主要ロジック関数で`verbose`フラグを渡して呼び出す。
+  - `tools/conftest.py`の`pytest_configure`フックで pytest の verbosity とログレベルを連動。
 
 #### HTML のコーディング規約
 
@@ -67,6 +72,6 @@
 
 - OS 差異を吸収しクロスプラットフォームで動作する CLI・テスト・ドキュメントを徹底
 - .gitignore, テスト, フォーマット, 型安全, 例外処理を重視
-- pydantic 型・logger 設計・CLI/ロジック分離・テスト期待値明示で CI の再現性・信頼性を最大化
+- pydantic 型・logger 設計（`logging_setting`による一元管理、pytest 連携）・CLI/ロジック分離・テスト期待値明示で CI の再現性・信頼性を最大化
 - process_syllable.py/test_process_syllable.py（旧 extract_feature.py/test_extract_feature.py）による統合ロジック・テスト網羅性・コーディング規約徹底
 - festival/phonemizer の出力統合・型設計・テスト設計を最優先

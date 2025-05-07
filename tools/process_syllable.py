@@ -39,26 +39,26 @@ class UnifiedPhonemeInfo(BaseModel):
 def main() -> None:
     """コマンドライン引数から実行するエントリポイント"""
     text, verbose = parse_args()
-    result = process_syllables(text, verbose)
+    logging_setting(verbose)
+    result = process_syllables(text)
     print_json_list(result)
 
 
-def parse_args(args: list[str] | None = None) -> tuple[str, bool]:
+def parse_args() -> tuple[str, bool]:
     """コマンドライン引数からテキストとverboseを取得する"""
     parser = argparse.ArgumentParser()
     parser.add_argument("text", type=str, help="解析するテキスト")
     parser.add_argument(
         "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
     )
-    parsed = parser.parse_args(args)
+    parsed = parser.parse_args()
     return parsed.text, parsed.verbose
 
 
-def process_syllables(text: str, verbose: bool) -> list[UnifiedPhonemeInfo]:
+def process_syllables(text: str) -> list[UnifiedPhonemeInfo]:
     """英語テキストから音素・シラブル・ストレス情報を抽出しUnifiedPhonemeInfoリストで返す"""
-    logging_setting(level=10 if verbose else 20, to_stderr=True)
-    fest = run_festival(text, verbose)
-    phnm = phonemizer_espeak(text, verbose)
+    fest = run_festival(text)
+    phnm = phonemizer_espeak(text)
 
     fest_by_word = group_by_word(fest)
     phnm_by_word = group_by_word(phnm)
@@ -157,7 +157,6 @@ def get_unified_stress(stresses: list[int]) -> int:
         return 0
 
     non_zero_stresses = [s for s in stresses if s != 0]
-    # non_zero_stresses will not be empty here because all(s == 0) is checked above.
 
     first_non_zero = non_zero_stresses[0]
     if not all(s == first_non_zero for s in non_zero_stresses):

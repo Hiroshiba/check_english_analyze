@@ -34,24 +34,24 @@ class PhonemeInfo(BaseModel):
 def main():
     """コマンドライン引数から実行するエントリポイント"""
     text, verbose = parse_args()
-    infos = festival(text, verbose)
+    logging_setting(verbose)
+    infos = festival(text)
     print_json_list(infos)
 
 
-def parse_args(args: list[str] | None = None) -> tuple[str, bool]:
+def parse_args() -> tuple[str, bool]:
     """コマンドライン引数からテキストとverboseを取得する"""
     parser = argparse.ArgumentParser()
     parser.add_argument("text", type=str, help="解析するテキスト")
     parser.add_argument(
         "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
     )
-    parsed = parser.parse_args(args)
+    parsed = parser.parse_args()
     return parsed.text, parsed.verbose
 
 
-def festival(text: str, verbose: bool) -> list[PhonemeInfo]:
+def festival(text: str) -> list[PhonemeInfo]:
     """英語テキストから音素・シラブル・ストレス情報を抽出しPhonemeInfoリストで返す"""
-    logging_setting(level=10 if verbose else 20, to_stderr=True)
     logger.debug("verboseモード: ON")
     script = build_festival_script(text)
     output = run_festival(script)

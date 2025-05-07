@@ -67,7 +67,7 @@ def test_festival_param(
     expected_syllable_indexes,
 ):
     """festivalで音素・シラブル・ストレス・インデックス情報を取得し、期待値と比較"""
-    result = festival(text, verbose=False)
+    result = festival(text)
     assert isinstance(result, list)
     assert all(isinstance(x, PhonemeInfo) for x in result)
 

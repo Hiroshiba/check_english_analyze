@@ -17,6 +17,7 @@
 - tools/process_alignment.py, tools/extract_feature.py に対する syrupy スナップショットテストの実装・運用
 - process_syllable.py のストレス検証ロジックを「全て 0 か、連続する 1 もしくは 2 が 1 度のみ現れてそれ以外が 0 か」を許容する仕様に修正
 - 実データ（tools/data/_.txt, _.wav）を使った統合的な出力検証
+- ロギング設定の統一と、それに伴う各スクリプトの修正
 
 ## 直近の変更・決定事項
 
@@ -66,6 +67,10 @@
 - validate_mfa_command で conda コマンド・mfa 環境・mfa コマンドの存在を事前検証
 - process_syllable.py（旧 extract_feature.py）で festival/phonemizer 両方の出力を統合する機能実装
   - ストレス情報（stress）は同一シラブル内で必ず同じ値となる仕様を明文化・実装・テスト・ドキュメントで統一
+- `utility/logger_utility.py`の`logging_setting`関数を変更し、引数を`verbose`フラグのみに統一。ログレベルは`verbose`フラグに基づいて決定し、出力先は常に`sys.stderr`に固定。
+- 各`process_*.py`および`extract_feature.py`スクリプトの`main`関数および主要ロジック関数で`logging_setting`の呼び出し方を変更し、`verbose`フラグを直接渡すように修正。
+- `tools/conftest.py`に`pytest_configure`フックを追加し、pytest の verbosity（`-v`オプションの有無）に応じてログレベルを設定するように変更。
+- `tools/extract_feature.py`と`tools/process_alignment.py`のコマンドライン引数に`--output_textgrid_dir`を追加し、TextGrid ファイルの出力先を任意で指定できるように変更。
 
 ## 次のステップ
 
@@ -106,6 +111,7 @@
 - 詳細なログ出力による処理フローの可視化
 - 一時ファイル・ディレクトリの自動削除によるクリーンな実行環境の維持
 - 共通処理は関数として切り出し、再利用性と可読性を向上
+- ロギング設定の一元管理（`utility/logger_utility.py`の`logging_setting`）と、pytest の verbosity との連携（`tools/conftest.py`の`pytest_configure`）。
 
 - 「他の process\_\*.py と合わせる」指示は表層だけでなく、動作・出力・エラー時の挙動・引数パース・例外処理・ログ出力まで一行単位で厳密に一致させる必要がある
 - 既存実装の全文比較・徹底模倣が修正サイクル短縮・品質向上に直結する

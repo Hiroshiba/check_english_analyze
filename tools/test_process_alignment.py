@@ -11,7 +11,5 @@ def test_alignment_with_real_data(snapshot: SnapshotAssertion):
     text_glob = "tools/data/*.txt"
     wav_glob = "tools/data/*.wav"
     with tempfile.TemporaryDirectory() as temp_dir:
-        result = alignment(
-            text_glob, wav_glob, Path(temp_dir), verbose=False, output_textgrid=False
-        )
+        result = alignment(text_glob, wav_glob, Path(temp_dir))
         assert result == snapshot

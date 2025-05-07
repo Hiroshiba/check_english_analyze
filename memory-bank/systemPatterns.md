@@ -5,6 +5,8 @@
 - CLI エントリポイントとロジック層を明確に分離（全 tools/\*.py で徹底）
 - pydantic 型による厳密なデータ管理
 - logger/verbose/標準出力分離
+  - `utility/logger_utility.py`の`logging_setting`関数で一元的に設定
+  - `tools/conftest.py`の`pytest_configure`フックにより、pytest 実行時のログレベルを verbosity オプション（`-v`）と連動
 - クロスプラットフォーム（Ubuntu, macOS）対応
 - festival/phonemizer の出力を組み合わせて「音素・シラブル・単語・ストレス強弱」を一括抽出（process_syllable.py, 旧 extract_feature.py）
 - 音素列のアライメントを行うモジュール（match_phonemes.py）による統合処理
@@ -29,6 +31,10 @@
 - pytest.mark.parametrize によるテストパターン統合（test\_\*.py 全体で assert 順・パターン順序も統一）
 - コーディング規約徹底（import 順・関数順・docstring・型ヒント・依存順・テストパターン順序）
 - 期待値明示による CI 安定化・再現性最大化
+- ロギング設定の統一
+  - `utility/logger_utility.py`の`logging_setting`関数で一元管理。
+  - 各スクリプトの`main`関数や主要ロジック関数で`verbose`フラグを渡して呼び出す。
+  - `tools/conftest.py`の`pytest_configure`フックで pytest の verbosity とログレベルを連動。
 
 ## コンポーネント構成・関係
 
@@ -39,9 +45,12 @@
   - verify_complete_alignment: アライメントが両方の音素列を完全にカバーしているか検証
   - match_phonemes: メイン関数として処理と検証を統括
 - tools/process_syllable.py（旧 tools/extract_feature.py）: 両出力を単語単位でマージし、pydantic 型で返す統合ロジック
+- tools/extract_feature.py: テキストと音声ファイルから音素・シラブル・ストレス・アライメント情報を結合。`--output_textgrid_dir`引数で TextGrid 出力先を指定可能。
+- tools/process_alignment.py: テキストと音声ファイルから音素アライメント情報を lab 形式で出力。`--output_textgrid_dir`引数で TextGrid 出力先を指定可能。
 - tools/symbol_mapping.json: festival と phonemizer の音素マッピング定義（festival 要素数 1/2/記号ごとにブロック分割しアルファベット順でソート、網羅性を維持）
 - tools/test_festival.py, tools/test_phonemizer.py, tools/test_match_phonemes.py, tools/test_process_syllable.py（旧 tools/test_extract_feature.py）: pytest パラメータ化・期待値明示・assert 順統一
-- utility/logger_utility.py: logger 生成・設定
+- tools/conftest.py: pytest の設定（JSON スナップショット用 fixture、ログレベル設定など）
+- utility/logger_utility.py: logger 生成・設定（`logging_setting`関数）
 - docs/: セットアップ・利用手順
 - README.md: 主要ツールの使い方・依存ライブラリの紹介
 

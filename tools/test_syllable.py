@@ -55,8 +55,8 @@ def test_syllable_param(
     expected_phoneme_indexes,
     expected_syllable_indexes,
 ):
-    """extract_featureで音素・シラブル・ストレス・インデックス情報を取得し、期待値と比較"""
-    result = process_syllables(text, verbose=False)
+    """process_syllablesで音素・シラブル・ストレス・インデックス情報を取得し、期待値と比較"""
+    result = process_syllables(text)
     assert isinstance(result, list)
     assert all(isinstance(x, UnifiedPhonemeInfo) for x in result)
 

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from syrupy.assertion import SnapshotAssertion
 
-from tools.extract_feature import AlignedPhonemeInfo, extract_aligned_feature
+from tools.extract_feature import extract_aligned_feature
 
 
 def test_extract_aligned_feature_with_real_data(snapshot_json: SnapshotAssertion):
@@ -11,7 +11,5 @@ def test_extract_aligned_feature_with_real_data(snapshot_json: SnapshotAssertion
     text_glob = "tools/data/*.txt"
     wav_glob = "tools/data/*.wav"
     with tempfile.TemporaryDirectory() as temp_dir:
-        result = extract_aligned_feature(
-            text_glob, wav_glob, Path(temp_dir), verbose=False, output_textgrid=False
-        )
+        result = extract_aligned_feature(text_glob, wav_glob, Path(temp_dir))
         assert result == snapshot_json

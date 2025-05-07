@@ -64,7 +64,7 @@ def test_phonemizer_param(
     expected_phoneme_indexes,
 ):
     """phonemizer+espeakで音素・ストレス・インデックス情報を取得し、期待値と比較"""
-    result = phonemizer_espeak(text, verbose=False)
+    result = phonemizer_espeak(text)
     assert isinstance(result, list)
     assert all(isinstance(x, PhonemeInfo) for x in result)
 

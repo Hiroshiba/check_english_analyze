@@ -101,6 +101,11 @@
 - テスト期待値は実装出力に完全同期
 - pytest による自動テストが全ての test\_\*.py で常時検証可能
 - README.md に主要ツールの使い方・依存ライブラリの紹介・テスト方法を明記
+- ロギング設定の統一
+  - `utility/logger_utility.py`の`logging_setting`関数を変更し、引数を`verbose`フラグのみに統一。ログレベルは`verbose`フラグに基づいて決定し、出力先は常に`sys.stderr`に固定。
+  - 各`process_*.py`および`extract_feature.py`スクリプトの`main`関数および主要ロジック関数で`logging_setting`の呼び出し方を変更し、`verbose`フラグを直接渡すように修正。
+  - `tools/conftest.py`に`pytest_configure`フックを追加し、pytest の verbosity（`-v`オプションの有無）に応じてログレベルを設定するように変更。
+- `tools/extract_feature.py`と`tools/process_alignment.py`のコマンドライン引数に`--output_textgrid_dir`を追加し、TextGrid ファイルの出力先を任意で指定できるように変更。
 
 ## 残タスク
 
@@ -140,6 +145,8 @@
 - 辞書運用・難単語解析・未登録音素ペアの追加運用により網羅性・拡張性が向上
 - process_alignment.py が複数ファイル対応・一時ディレクトリ自動削除・出力先必須化・詳細ログ出力により使いやすさと安定性が向上
 - 共通処理を関数として切り出し、コードの再利用性と可読性を向上（例：`expand_glob_pattern`関数、`verify_complete_alignment`関数）
+- ロギング設定が統一され、pytest の verbosity と連動するようになった。
+- TextGrid ファイルの出力先を任意で指定できるようになった。
 
 ## 既知の課題
 

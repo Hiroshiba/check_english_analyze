@@ -30,13 +30,14 @@ class LabEntry(BaseModel):
 
 def main() -> None:
     """コマンドライン引数から実行するエントリポイント"""
-    text_glob, wav_glob, output_dir, verbose, output_textgrid = parse_args()
-    lab_dict = alignment(text_glob, wav_glob, output_dir, verbose, output_textgrid)
+    text_glob, wav_glob, output_dir, output_textgrid_dir, verbose = parse_args()
+    logging_setting(verbose)
+    lab_dict = alignment(text_glob, wav_glob, output_textgrid_dir)
     write_lab_files(lab_dict, output_dir)
 
 
-def parse_args() -> tuple[str, str, Path, bool, bool]:
-    """コマンドライン引数からtext_glob, wav_glob, output_dir, verbose, output_textgridを取得する"""
+def parse_args() -> tuple[str, str, Path, Path | None, bool]:
+    """コマンドライン引数からtext_glob, wav_glob, output_dir, output_textgrid_dir, verboseを取得する"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--text_glob",
@@ -55,32 +56,29 @@ def parse_args() -> tuple[str, str, Path, bool, bool]:
         help="出力先ディレクトリ",
     )
     parser.add_argument(
-        "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
+        "--output_textgrid_dir",
+        type=Path,
+        help="TextGridファイルの出力先ディレクトリ。指定しない場合は出力しない。",
     )
     parser.add_argument(
-        "--output_textgrid",
-        action="store_true",
-        help="TextGridファイルを出力ディレクトリにコピーする",
+        "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
     )
     parsed = parser.parse_args()
     return (
         parsed.text_glob,
         parsed.wav_glob,
         parsed.output_dir,
+        parsed.output_textgrid_dir,
         parsed.verbose,
-        parsed.output_textgrid,
     )
 
 
 def alignment(
     text_glob: str,
     wav_glob: str,
-    output_dir: Path,
-    verbose: bool,
-    output_textgrid: bool,
+    output_textgrid_dir: Path | None = None,
 ) -> dict[str, list[LabEntry]]:
     """アライメント処理本体。各ファイル名ごとにLabEntryリストを返す"""
-    logging_setting(level=10 if verbose else 20, to_stderr=True)
     logger.debug("verboseモード: ON")
     logger.debug(f"text_glob: {text_glob}")
     logger.debug(f"wav_glob: {wav_glob}")
@@ -113,8 +111,8 @@ def alignment(
             lab_entries = parse_textgrid_file(textgrid_file)
             lab_dict[textgrid_file.stem] = lab_entries
             logger.debug(f"phones: {[entry.phoneme for entry in lab_entries]}")
-        if output_textgrid:
-            copy_textgrid_files(textgrid_dir, output_dir)
+        if output_textgrid_dir is not None:
+            copy_textgrid_files(textgrid_dir, output_textgrid_dir)
         return lab_dict
 
 

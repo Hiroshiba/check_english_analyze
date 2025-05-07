@@ -35,18 +35,17 @@ class AlignedPhonemeInfo(BaseModel):
 
 def main() -> None:
     """コマンドライン引数から実行するエントリポイント"""
-    text_glob, wav_glob, output_dir, verbose = parse_args()
-    phoneme_dict = extract_aligned_feature(
-        text_glob, wav_glob, output_dir, verbose, output_textgrid=False
-    )
+    text_glob, wav_glob, output_dir, output_textgrid_dir, verbose = parse_args()
+    logging_setting(verbose)
+    phoneme_dict = extract_aligned_feature(text_glob, wav_glob, output_textgrid_dir)
     for stem, infos in phoneme_dict.items():
         json_path = Path(output_dir) / f"{stem}.json"
         write_json_list(infos, json_path)
         logger.info(f"jsonファイル出力: {json_path}")
 
 
-def parse_args(args: list[str] | None = None) -> tuple[str, str, Path, bool]:
-    """コマンドライン引数からtext_glob, wav_glob, output_dir, verboseを取得する"""
+def parse_args() -> tuple[str, str, Path, Path | None, bool]:
+    """コマンドライン引数からtext_glob, wav_glob, output_dir, output_textgrid_dir, verboseを取得する"""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--text_glob",
@@ -65,21 +64,29 @@ def parse_args(args: list[str] | None = None) -> tuple[str, str, Path, bool]:
         help="出力先ディレクトリ",
     )
     parser.add_argument(
+        "--output_textgrid_dir",
+        type=Path,
+        help="TextGridファイルの出力先ディレクトリ。指定しない場合は出力しない。",
+    )
+    parser.add_argument(
         "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
     )
-    parsed = parser.parse_args(args)
-    return parsed.text_glob, parsed.wav_glob, parsed.output_dir, parsed.verbose
+    parsed = parser.parse_args()
+    return (
+        parsed.text_glob,
+        parsed.wav_glob,
+        parsed.output_dir,
+        parsed.output_textgrid_dir,
+        parsed.verbose,
+    )
 
 
 def extract_aligned_feature(
     text_glob: str,
     wav_glob: str,
-    output_dir: Path,
-    verbose: bool,
-    output_textgrid: bool,
+    output_textgrid_dir: Path | None = None,
 ) -> dict[str, list[AlignedPhonemeInfo]]:
     """音素・シラブル・ストレス・アライメント情報を抽出しファイル名ごとに返す"""
-    logging_setting(level=10 if verbose else 20, to_stderr=True)
     logger.debug("verboseモード: ON")
     logger.debug(f"text_glob: {text_glob}")
     logger.debug(f"wav_glob: {wav_glob}")
@@ -91,13 +98,13 @@ def extract_aligned_feature(
             f"テキストファイルと音声ファイルの数が一致しません: text_paths={len(text_paths)}, wav_paths={len(wav_paths)}"
         )
 
-    lab_dict = alignment(text_glob, wav_glob, output_dir, verbose, output_textgrid)
+    lab_dict = alignment(text_glob, wav_glob, output_textgrid_dir)
     phoneme_dict: dict[str, list[AlignedPhonemeInfo]] = {}
 
     for text_path in text_paths:
         stem = text_path.stem
         txt = text_path.read_text(encoding="utf-8").strip()
-        unified_infos = process_syllables(txt, verbose)
+        unified_infos = process_syllables(txt)
         lab_entries = lab_dict.get(stem)
         if lab_entries is None:
             raise ValueError(f"lab情報が見つかりません: {stem}")
