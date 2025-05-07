@@ -19,12 +19,7 @@ def validate_mfa_command() -> None:
 
     logger.debug("conda環境の一覧を取得")
     try:
-        envs = subprocess.run(
-            ["conda", "env", "list"],
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout
+        envs = subprocess.check_output(["conda", "env", "list"], text=True)
     except Exception as e:
         raise RuntimeError(
             "conda環境一覧の取得に失敗しました。詳細はdocs/mfa.mdを参照してください。"
@@ -38,18 +33,15 @@ def validate_mfa_command() -> None:
 
     logger.debug("mfaコマンドの存在を確認")
     try:
-        result = subprocess.run(
-            ["conda", "run", "-n", "mfa", "which", "mfa"],
-            capture_output=True,
-            text=True,
-            check=True,
+        result = subprocess.check_output(
+            ["conda", "run", "-n", "mfa", "which", "mfa"], text=True
         )
     except Exception as e:
         raise RuntimeError(
             "mfa環境の起動に失敗しました。詳細はdocs/mfa.mdを参照してください。"
         ) from e
 
-    if result.returncode != 0 or not result.stdout.strip():
+    if not result.strip():
         raise RuntimeError(
             "mfa環境にmfaコマンドがインストールされていません。詳細はdocs/mfa.mdを参照してください。"
         )
@@ -57,18 +49,15 @@ def validate_mfa_command() -> None:
 
 def ensure_model_exists(model_type: str, model_name: str) -> None:
     """モデル・辞書が存在しなければダウンロードする"""
-    result = subprocess.run(
-        ["conda", "run", "-n", "mfa", "mfa", "model", "list", model_type],
-        capture_output=True,
-        text=True,
-        check=True,
+    result = subprocess.check_output(
+        ["conda", "run", "-n", "mfa", "mfa", "model", "list", model_type], text=True
     )
-    logger.debug(f"{model_type}モデル一覧: {result.stdout}")
+    logger.debug(f"{model_type}モデル一覧: {result}")
 
-    if model_name not in result.stdout:
+    if model_name not in result:
         logger.info(f"{model_type}モデル {model_name} をダウンロードします")
         try:
-            subprocess.run(
+            subprocess.check_call(
                 [
                     "conda",
                     "run",
@@ -80,7 +69,6 @@ def ensure_model_exists(model_type: str, model_name: str) -> None:
                     model_type,
                     model_name,
                 ],
-                check=True,
             )
         except Exception as e:
             raise RuntimeError(
