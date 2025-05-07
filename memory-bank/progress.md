@@ -115,6 +115,7 @@
 - `tools/extract_feature.py`と`tools/process_alignment.py`のコマンドライン引数に`--output_textgrid_dir`を追加し、TextGrid ファイルの出力先を任意で指定できるように変更。
 - `tools`ディレクトリ以下の CLI ツール（`extract_feature.py`, `process_alignment.py`, `process_festival.py`, `process_phonemizer.py`, `process_syllable.py`）に`typer`を導入し、`argparse`を置き換え。
 - 上記 CLI ツールのうち、`process_festival.py`, `process_phonemizer.py`, `process_syllable.py` の `text` 引数を `typer.Argument` に修正し、Usage 通りの動作を保証。`process_alignment.py`, `extract_feature.py` は `typer.Option` のまま変更なし。
+- GitHub Actions のワークフローファイル（.github/workflows/test.yml）を修正し、MFA インストール時に `joblib<1.4` を指定することで CI エラーを解消。
 
 ## 残タスク
 
@@ -134,12 +135,11 @@
 - シラブル・音素・ストレス・単語情報を 1 コマンドで抽出する CLI/API の実装
 - ファイル出力機能や記号フィルタ機能など process_syllable.py（旧 extract_feature.py）の拡張
 - phonemizer の高度な利用例やバックエンド切替の検証
-- CI/CD 強化や他言語対応の検討
 
 ## 現在のステータス
 
 - `tools`ディレクトリ以下のモジュール構成を改善し、各ファイルの行数を削減、責務を明確化
-- GitHub Actions による CI 環境を構築
+- GitHub Actions による CI 環境が安定稼働（MFA インストール時の joblib バージョン固定によりエラー解消済み）
   - push するたびにテストを実行
   - リント・フォーマットのチェックを実行
 - match_phonemes.py のアライメント検証機能を強化

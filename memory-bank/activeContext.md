@@ -79,6 +79,7 @@
 - `tools/extract_feature.py`と`tools/process_alignment.py`のコマンドライン引数に`--output_textgrid_dir`を追加し、TextGrid ファイルの出力先を任意で指定できるように変更。
 - `tools`ディレクトリ以下の CLI ツール（`extract_feature.py`, `process_alignment.py`, `process_festival.py`, `process_phonemizer.py`, `process_syllable.py`）に`typer`を導入し、`argparse`を置き換え。
 - 上記 CLI ツールのうち、`process_festival.py`, `process_phonemizer.py`, `process_syllable.py` の `text` 引数を `typer.Argument` に修正し、Usage 通りの動作を保証。`process_alignment.py`, `extract_feature.py` は `typer.Option` のまま変更なし。
+- GitHub Actions のワークフローファイル（.github/workflows/test.yml）を修正し、MFA インストール時に `joblib<1.4` を指定することで CI エラーを解消。
 
 ## 次のステップ
 
@@ -93,8 +94,6 @@
   - コードフォーマットチェックの追加
   - 型チェックの追加
 - Linux と macOS の環境差異を吸収するテスト設計の改善
-
-## 次のステップ
 
 - 音素マッピングの追加検討
   - `symbol_mapping.json` にさらに必要なマッピングがないか網羅的に確認
