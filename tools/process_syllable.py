@@ -8,10 +8,11 @@ Usage:
     PYTHONPATH=. uv run python tools/process_syllable.py "hello, world!" --verbose
 """
 
-import argparse
 from collections import defaultdict
 from pathlib import Path
+from typing import Annotated
 
+import typer
 from pydantic import BaseModel
 
 from tools.match_phonemes import match_phonemes
@@ -36,23 +37,16 @@ class UnifiedPhonemeInfo(BaseModel):
     stress: int
 
 
-def main() -> None:
+def main(
+    text: Annotated[str, typer.Argument(help="解析するテキスト")],
+    verbose: Annotated[
+        bool, typer.Option(help="詳細なデバッグ出力をstderrに出す")
+    ] = False,
+) -> None:
     """コマンドライン引数から実行するエントリポイント"""
-    text, verbose = parse_args()
     logging_setting(verbose)
     result = process_syllables(text)
     print_json_list(result)
-
-
-def parse_args() -> tuple[str, bool]:
-    """コマンドライン引数からテキストとverboseを取得する"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("text", type=str, help="解析するテキスト")
-    parser.add_argument(
-        "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
-    )
-    parsed = parser.parse_args()
-    return parsed.text, parsed.verbose
 
 
 def process_syllables(text: str) -> list[UnifiedPhonemeInfo]:
@@ -184,4 +178,4 @@ def get_unified_stress(stresses: list[int]) -> int:
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

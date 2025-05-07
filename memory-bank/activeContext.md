@@ -18,6 +18,7 @@
 - process_syllable.py のストレス検証ロジックを「全て 0 か、連続する 1 もしくは 2 が 1 度のみ現れてそれ以外が 0 か」を許容する仕様に修正
 - 実データ（tools/data/_.txt, _.wav）を使った統合的な出力検証
 - ロギング設定の統一と、それに伴う各スクリプトの修正
+- `tools`ディレクトリ以下の CLI ツールへの`typer`導入
 
 ## 直近の変更・決定事項
 
@@ -71,6 +72,7 @@
 - 各`process_*.py`および`extract_feature.py`スクリプトの`main`関数および主要ロジック関数で`logging_setting`の呼び出し方を変更し、`verbose`フラグを直接渡すように修正。
 - `tools/conftest.py`に`pytest_configure`フックを追加し、pytest の verbosity（`-v`オプションの有無）に応じてログレベルを設定するように変更。
 - `tools/extract_feature.py`と`tools/process_alignment.py`のコマンドライン引数に`--output_textgrid_dir`を追加し、TextGrid ファイルの出力先を任意で指定できるように変更。
+- `tools`ディレクトリ以下の CLI ツール（`extract_feature.py`, `process_alignment.py`, `process_festival.py`, `process_phonemizer.py`, `process_syllable.py`）に`typer`を導入し、`argparse`を置き換え。
 
 ## 次のステップ
 

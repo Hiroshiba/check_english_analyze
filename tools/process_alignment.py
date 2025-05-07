@@ -6,12 +6,13 @@ Usage:
     PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output --output_textgrid --verbose
 """
 
-import argparse
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+from typing import Annotated
 
+import typer
 from pydantic import BaseModel
 
 from utility.file_utility import expand_glob_pattern
@@ -28,49 +29,29 @@ class LabEntry(BaseModel):
     phoneme: str
 
 
-def main() -> None:
+def main(
+    text_glob: Annotated[
+        str,
+        typer.Argument(help="テキストファイルのglobパターン（例: tools/data/*.txt）"),
+    ],
+    wav_glob: Annotated[
+        str, typer.Argument(help="音声ファイルのglobパターン（例: tools/data/*.wav）")
+    ],
+    output_dir: Annotated[Path, typer.Argument(help="出力先ディレクトリ")],
+    output_textgrid_dir: Annotated[
+        Path | None,
+        typer.Option(
+            help="TextGridファイルの出力先ディレクトリ。指定しない場合は出力しない。"
+        ),
+    ] = None,
+    verbose: Annotated[
+        bool, typer.Option(help="詳細なデバッグ出力をstderrに出す")
+    ] = False,
+) -> None:
     """コマンドライン引数から実行するエントリポイント"""
-    text_glob, wav_glob, output_dir, output_textgrid_dir, verbose = parse_args()
     logging_setting(verbose)
     lab_dict = alignment(text_glob, wav_glob, output_textgrid_dir)
     write_lab_files(lab_dict, output_dir)
-
-
-def parse_args() -> tuple[str, str, Path, Path | None, bool]:
-    """コマンドライン引数からtext_glob, wav_glob, output_dir, output_textgrid_dir, verboseを取得する"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--text_glob",
-        required=True,
-        help="テキストファイルのglobパターン（例: tools/data/*.txt）",
-    )
-    parser.add_argument(
-        "--wav_glob",
-        required=True,
-        help="音声ファイルのglobパターン（例: tools/data/*.wav）",
-    )
-    parser.add_argument(
-        "--output_dir",
-        type=Path,
-        required=True,
-        help="出力先ディレクトリ",
-    )
-    parser.add_argument(
-        "--output_textgrid_dir",
-        type=Path,
-        help="TextGridファイルの出力先ディレクトリ。指定しない場合は出力しない。",
-    )
-    parser.add_argument(
-        "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
-    )
-    parsed = parser.parse_args()
-    return (
-        parsed.text_glob,
-        parsed.wav_glob,
-        parsed.output_dir,
-        parsed.output_textgrid_dir,
-        parsed.verbose,
-    )
 
 
 def alignment(
@@ -331,4 +312,4 @@ def write_lab_file(entries: list[LabEntry], output_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

@@ -10,6 +10,7 @@
 - ruff（静的解析・フォーマット）
 - pydantic（型安全、データ構造厳密化）
 - sexpdata（S 式パース）
+- typer（CLI 引数解析、PyPI, uv/pip）
 - uv（Python パッケージ管理）
 - 独自 logger（`utility/logger_utility.py`の`logging_setting`関数で一元管理）
 
@@ -66,7 +67,7 @@
 
 ## 依存関係
 
-- festival, espeak, phonemizer, pytest, ruff, pydantic, sexpdata, uv
+- festival, espeak, phonemizer, pytest, ruff, pydantic, sexpdata, typer, uv
 
 ## ツール利用方針
 

@@ -6,13 +6,14 @@ Usage:
     PYTHONPATH=. uv run python tools/process_phonemizer.py "hello, world!" --verbose
 """
 
-import argparse
 import glob
 import os
 import platform
 import re
 from pathlib import Path
+from typing import Annotated
 
+import typer
 from phonemizer import phonemize
 from phonemizer.separator import Separator
 from pydantic import BaseModel
@@ -33,23 +34,16 @@ class PhonemeInfo(BaseModel):
     stress: int
 
 
-def main() -> None:
+def main(
+    text: Annotated[str, typer.Argument(help="解析するテキスト")],
+    verbose: Annotated[
+        bool, typer.Option(help="詳細なデバッグ出力をstderrに出す")
+    ] = False,
+) -> None:
     """コマンドライン引数から実行するエントリポイント"""
-    text, verbose = parse_args()
     logging_setting(verbose)
     infos = phonemizer_espeak(text)
     print_json_list(infos)
-
-
-def parse_args() -> tuple[str, bool]:
-    """コマンドライン引数からテキストとverboseを取得する"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("text", type=str, help="解析するテキスト")
-    parser.add_argument(
-        "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
-    )
-    parsed = parser.parse_args()
-    return parsed.text, parsed.verbose
 
 
 def phonemizer_espeak(text: str) -> list[PhonemeInfo]:
@@ -137,4 +131,4 @@ def set_espeak_library_for_macos() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

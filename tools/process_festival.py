@@ -6,12 +6,13 @@ Usage:
     PYTHONPATH=. uv run python tools/process_festival.py "hello, world!" --verbose
 """
 
-import argparse
 import platform
 import subprocess
 from pathlib import Path
+from typing import Annotated
 
 import sexpdata
+import typer
 from pydantic import BaseModel
 
 from utility.json_utility import print_json_list
@@ -31,23 +32,16 @@ class PhonemeInfo(BaseModel):
     stress: int
 
 
-def main():
+def main(
+    text: Annotated[str, typer.Argument(help="解析するテキスト")],
+    verbose: Annotated[
+        bool, typer.Option(help="詳細なデバッグ出力をstderrに出す")
+    ] = False,
+) -> None:
     """コマンドライン引数から実行するエントリポイント"""
-    text, verbose = parse_args()
     logging_setting(verbose)
     infos = festival(text)
     print_json_list(infos)
-
-
-def parse_args() -> tuple[str, bool]:
-    """コマンドライン引数からテキストとverboseを取得する"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("text", type=str, help="解析するテキスト")
-    parser.add_argument(
-        "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
-    )
-    parsed = parser.parse_args()
-    return parsed.text, parsed.verbose
 
 
 def festival(text: str) -> list[PhonemeInfo]:
@@ -199,4 +193,4 @@ def extract_sexp(output: str) -> list[PhonemeInfo]:
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

@@ -6,9 +6,10 @@ Usage:
     PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output --verbose
 """
 
-import argparse
 from pathlib import Path
+from typing import Annotated
 
+import typer
 from pydantic import BaseModel
 
 from tools.process_alignment import LabEntry, alignment
@@ -33,52 +34,32 @@ class AlignedPhonemeInfo(BaseModel):
     end: float
 
 
-def main() -> None:
+def main(
+    text_glob: Annotated[
+        str,
+        typer.Argument(help="テキストファイルのglobパターン（例: tools/data/*.txt）"),
+    ],
+    wav_glob: Annotated[
+        str, typer.Argument(help="音声ファイルのglobパターン（例: tools/data/*.wav）")
+    ],
+    output_dir: Annotated[Path, typer.Argument(help="出力先ディレクトリ")],
+    output_textgrid_dir: Annotated[
+        Path | None,
+        typer.Option(
+            help="TextGridファイルの出力先ディレクトリ。指定しない場合は出力しない。"
+        ),
+    ] = None,
+    verbose: Annotated[
+        bool, typer.Option(help="詳細なデバッグ出力をstderrに出す")
+    ] = False,
+) -> None:
     """コマンドライン引数から実行するエントリポイント"""
-    text_glob, wav_glob, output_dir, output_textgrid_dir, verbose = parse_args()
     logging_setting(verbose)
     phoneme_dict = extract_aligned_feature(text_glob, wav_glob, output_textgrid_dir)
     for stem, infos in phoneme_dict.items():
         json_path = Path(output_dir) / f"{stem}.json"
         write_json_list(infos, json_path)
         logger.info(f"jsonファイル出力: {json_path}")
-
-
-def parse_args() -> tuple[str, str, Path, Path | None, bool]:
-    """コマンドライン引数からtext_glob, wav_glob, output_dir, output_textgrid_dir, verboseを取得する"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--text_glob",
-        required=True,
-        help="テキストファイルのglobパターン（例: tools/data/*.txt）",
-    )
-    parser.add_argument(
-        "--wav_glob",
-        required=True,
-        help="音声ファイルのglobパターン（例: tools/data/*.wav）",
-    )
-    parser.add_argument(
-        "--output_dir",
-        type=Path,
-        required=True,
-        help="出力先ディレクトリ",
-    )
-    parser.add_argument(
-        "--output_textgrid_dir",
-        type=Path,
-        help="TextGridファイルの出力先ディレクトリ。指定しない場合は出力しない。",
-    )
-    parser.add_argument(
-        "--verbose", action="store_true", help="詳細なデバッグ出力をstderrに出す"
-    )
-    parsed = parser.parse_args()
-    return (
-        parsed.text_glob,
-        parsed.wav_glob,
-        parsed.output_dir,
-        parsed.output_textgrid_dir,
-        parsed.verbose,
-    )
 
 
 def extract_aligned_feature(
@@ -192,4 +173,4 @@ def add_silence_phonemes(
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)
