@@ -30,12 +30,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y festival festvox-us-slt-hts espeak
 
-      - name: <Setup> Minicondaのインストール
-        uses: conda-incubator/setup-miniconda@v3
-
-      - name: <Setup> MFAのインストール
-        shell: bash -el {0}
-        run: conda create -y -n mfa -c conda-forge montreal-forced-aligner
+      - name: <Setup> Miniconda & MFAのインストール
+        run: |
+          wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+          bash miniconda.sh -b -p $HOME/miniconda
+          echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+          source $HOME/miniconda/bin/activate
+          conda create -y -n mfa -c conda-forge montreal-forced-aligner
 
       - name: <Setup> G2P_en NLTKリソースのダウンロード
         run: uv run python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng', quiet=True)"
@@ -47,5 +48,4 @@ jobs:
         run: uv run ruff format --check
 
       - name: <Test> テスト実行
-        shell: bash -el {0}
         run: PYTHONPATH=. uv run pytest -sv

@@ -2,6 +2,13 @@
 
 ## 現状動作していること
 
+- `tools`ディレクトリ以下のモジュールを分割・整理
+  - `process_alignment.py` から MFA 実行関連の関数を `mfa_runner.py` に移動
+  - `process_alignment.py` から TextGrid パース・lab ファイル出力関連の関数を `textgrid_parser.py` に移動
+  - `match_phonemes.py` から音素マッチングロジックを `phoneme_matcher.py` に移動
+  - `match_phonemes.py` から `symbol_mapping.json` 読み込みロジックを `symbol_loader.py` に移動
+  - `extract_feature.py` からユーティリティ関数 `add_silence_phonemes` を `feature_extractor_utils.py` に移動
+  - 各メイン処理ファイル (`process_alignment.py`, `match_phonemes.py`, `extract_feature.py`) の import 文を修正
 - match_phonemes.py のバグを修正
   - 無効な音素ペア（マッピングが存在しないペア）があった場合に確実にエラーを発生させるように修正
   - アライメントの最終スコア（`final_score`）を評価し、0 以下の場合は ValueError を発生
@@ -77,7 +84,7 @@
   - 一時ディレクトリを`tempfile.TemporaryDirectory`で自動削除するように変更
   - ログ出力を他の process\_\*.py ファイルと細部まで統一（詳細なデバッグログ、エラーロギング、コマンド実行ログなど）
   - テキストファイルと音声ファイルの数が一致しない場合のエラーハンドリングを追加
-  - MFA の align コマンドに`--clean`と`--overwrite`オプションを追加
+  - MFA の align コマンドに`--clean`と`--overwrite`オプション追加
   - prepare_corpus_dir 関数で既存のディレクトリを削除してから新規作成するように修正
   - run_mfa_align 関数で出力ディレクトリが存在する場合は事前に削除するように修正
   - TextGrid ファイルの空のテキスト区間（ポーズ）を"(.)"として出力するように修正
@@ -130,6 +137,7 @@
 
 ## 現在のステータス
 
+- `tools`ディレクトリ以下のモジュール構成を改善し、各ファイルの行数を削減、責務を明確化
 - GitHub Actions による CI 環境を構築
   - push するたびにテストを実行
   - リント・フォーマットのチェックを実行
@@ -162,6 +170,7 @@
 
 ## 意思決定の経緯・履歴
 
+- `tools`ディレクトリのモジュール分割を実施し、コードの可読性とメンテナンス性を向上させる方針を採用
 - GitHub Actions を導入し、CI を構築する方針を採用
   - すべてのブランチを対象に、push するたびにテストを実行
   - VOICEVOX_engine のワークフローを参考に命名規則を統一

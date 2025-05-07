@@ -12,6 +12,7 @@ from typing import Annotated
 import typer
 from pydantic import BaseModel
 
+from tools.feature_extractor_utils import add_silence_phonemes
 from tools.process_alignment import LabEntry, alignment
 from tools.process_syllable import UnifiedPhonemeInfo, process_syllables
 from utility.file_utility import expand_glob_pattern
@@ -127,48 +128,6 @@ def combine_phoneme_with_lab(
                 end=lab.end,
             )
         )
-    return result
-
-
-def add_silence_phonemes(
-    unified_infos: list[UnifiedPhonemeInfo],
-) -> list[UnifiedPhonemeInfo]:
-    """unified_infosの先頭・末尾に無音要素を追加する"""
-    result = []
-
-    result.append(
-        UnifiedPhonemeInfo(
-            word="",
-            word_index=0,
-            syllable_index=0,
-            phoneme="",
-            phoneme_index=0,
-            stress=0,
-        )
-    )
-
-    for info in unified_infos:
-        result.append(
-            UnifiedPhonemeInfo(
-                word=info.word,
-                word_index=info.word_index + 1,
-                syllable_index=info.syllable_index + 1,
-                phoneme=info.phoneme,
-                phoneme_index=info.phoneme_index + 1,
-                stress=info.stress,
-            )
-        )
-
-    result.append(
-        UnifiedPhonemeInfo(
-            word="",
-            word_index=result[-1].word_index + 1,
-            syllable_index=result[-1].syllable_index + 1,
-            phoneme="",
-            phoneme_index=result[-1].phoneme_index + 1,
-            stress=0,
-        )
-    )
     return result
 
 

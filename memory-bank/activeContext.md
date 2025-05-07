@@ -2,26 +2,31 @@
 
 ## 現在の作業フォーカス
 
-- match_phonemes.py のバグ修正および音素アライメントロジックの堅牢化
-  - アライメント検証ロジックの関数切り出しによるコード品質向上
-  - コーディング規約に準拠した関数責任の明確化
-- GitHub Actions のワークフローファイル（.github/workflows/test.yml）の作成・設定
-- Linux 環境でのテスト実行の安定化
-- テストコードを Linux 環境に合わせて修正
-- スナップショットテストの更新
-- festival と phonemizer の音素列を適切にアライメントするモジュール（tools/match_phonemes.py）の設計・実装
-- 音素列のアライメントに基づいて情報を統合するロジックの改善（tools/process_syllable.py）
-- symbol_mapping.json の大規模拡充・音素マッピングの追加・アルファベット順ソート・記号/複数音素/単音素ブロック分割
-- コーディング規約・スタイルの徹底（不要なコメント削除、docstring 簡素化、例外処理の統一、マッピングファイルの網羅性・ソート方針の徹底）
-- 不整合があった場合のエラー処理の改善（警告からエラーへの変更）
-- tools/process_alignment.py, tools/extract_feature.py に対する syrupy スナップショットテストの実装・運用
-- process_syllable.py のストレス検証ロジックを「全て 0 か、連続する 1 もしくは 2 が 1 度のみ現れてそれ以外が 0 か」を許容する仕様に修正
-- 実データ（tools/data/_.txt, _.wav）を使った統合的な出力検証
-- ロギング設定の統一と、それに伴う各スクリプトの修正
-- `tools`ディレクトリ以下の CLI ツールへの`typer`導入
+- `tools`ディレクトリ以下のモジュール構成の改善
+  - 各ファイルの行数を 150 行程度に抑え、可読性とメンテナンス性を向上
+  - `process_alignment.py` と `match_phonemes.py` を中心に機能分割
+  - 新規モジュールとして `mfa_runner.py`, `textgrid_parser.py`, `phoneme_matcher.py`, `symbol_loader.py`, `feature_extractor_utils.py` を作成
+- 音素マッピングの追加検討
+  - `symbol_mapping.json` にさらに必要なマッピングがないか網羅的に確認
+  - 特殊な音素や記号のマッピングを強化
+- アライメントロジックの継続的改善
+  - `verify_complete_alignment` による検証を活かした堅牢性向上
+  - エラーメッセージの改善でデバッグ容易性を向上
+- CI の安定化と拡張
+  - テストカバレッジの追加
+  - コードフォーマットチェックの追加
+  - 型チェックの追加
+- Linux と macOS の環境差異を吸収するテスト設計の改善
 
 ## 直近の変更・決定事項
 
+- `tools`ディレクトリ以下のモジュールを分割・整理
+  - `process_alignment.py` から MFA 実行関連の関数を `mfa_runner.py` に移動
+  - `process_alignment.py` から TextGrid パース・lab ファイル出力関連の関数を `textgrid_parser.py` に移動
+  - `match_phonemes.py` から音素マッチングロジックを `phoneme_matcher.py` に移動
+  - `match_phonemes.py` から `symbol_mapping.json` 読み込みロジックを `symbol_loader.py` に移動
+  - `extract_feature.py` からユーティリティ関数 `add_silence_phonemes` を `feature_extractor_utils.py` に移動
+  - 各メイン処理ファイル (`process_alignment.py`, `match_phonemes.py`, `extract_feature.py`) の import 文を修正
 - symbol_mapping.json の大規模拡充・ソート（festival 要素数/記号ごとにブロック分割しアルファベット順に整理）
 - process_syllable.py のストレス検証ロジックを「全て 0 か、連続する 1 もしくは 2 が 1 度のみ現れてそれ以外が 0 か」を許容する仕様に修正
 - match_phonemes.py のバグ修正を実施
@@ -73,6 +78,20 @@
 - `tools/conftest.py`に`pytest_configure`フックを追加し、pytest の verbosity（`-v`オプションの有無）に応じてログレベルを設定するように変更。
 - `tools/extract_feature.py`と`tools/process_alignment.py`のコマンドライン引数に`--output_textgrid_dir`を追加し、TextGrid ファイルの出力先を任意で指定できるように変更。
 - `tools`ディレクトリ以下の CLI ツール（`extract_feature.py`, `process_alignment.py`, `process_festival.py`, `process_phonemizer.py`, `process_syllable.py`）に`typer`を導入し、`argparse`を置き換え。
+
+## 次のステップ
+
+- 音素マッピングの追加検討
+  - `symbol_mapping.json` にさらに必要なマッピングがないか網羅的に確認
+  - 特殊な音素や記号のマッピングを強化
+- アライメントロジックの継続的改善
+  - `verify_complete_alignment` による検証を活かした堅牢性向上
+  - エラーメッセージの改善でデバッグ容易性を向上
+- CI の安定化と拡張
+  - テストカバレッジの追加
+  - コードフォーマットチェックの追加
+  - 型チェックの追加
+- Linux と macOS の環境差異を吸収するテスト設計の改善
 
 ## 次のステップ
 
