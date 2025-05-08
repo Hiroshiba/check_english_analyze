@@ -16,6 +16,7 @@ from tools.mfa_runner import (
     ensure_model_exists,
     prepare_corpus_dir,
     run_mfa_align,
+    run_mfa_g2p,
     validate_mfa_command,
 )
 from tools.textgrid_parser import (
@@ -80,30 +81,54 @@ def alignment(
     validate_mfa_command()
     validate_file_counts(text_paths, wav_paths)
 
-    model_name = "english_mfa"
-    dict_name = "english_mfa"
-    ensure_model_exists("acoustic", model_name)
-    ensure_model_exists("dictionary", dict_name)
+    acoustic_model_name = "english_mfa"
+    existing_dictionary_name = "english_mfa"
+    g2p_model_name = "english_us_mfa"
+
+    ensure_model_exists("acoustic", acoustic_model_name)
+    ensure_model_exists("dictionary", existing_dictionary_name)
+    ensure_model_exists("g2p", g2p_model_name)
 
     logger.debug("一時ディレクトリを作成")
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
         corpus_dir = temp_path / "mfa_corpus"
+        g2p_output_dictionary_path = temp_path / "g2p_dictionary.txt"
         textgrid_dir = temp_path / "textgrid_output"
+
         logger.debug(f"コーパスディレクトリ: {corpus_dir}")
+        logger.debug(f"G2P辞書出力パス: {g2p_output_dictionary_path}")
         logger.debug(f"TextGrid出力ディレクトリ: {textgrid_dir}")
+
         prepare_corpus_dir(text_paths, wav_paths, corpus_dir)
-        align_result = run_mfa_align(corpus_dir, model_name, dict_name, textgrid_dir)
+
+        logger.info("G2P辞書を生成中...")
+        g2p_result = run_mfa_g2p(
+            corpus_dir,
+            g2p_model_name,
+            g2p_output_dictionary_path,
+        )
+        logger.debug(f"G2P処理完了: {g2p_result}")
+
+        align_result = run_mfa_align(
+            corpus_dir,
+            str(g2p_output_dictionary_path),
+            acoustic_model_name,
+            textgrid_dir,
+        )
         logger.debug("MFAアライメント完了")
         logger.debug(f"MFA出力: {align_result}")
+
         lab_dict: dict[str, list[LabEntry]] = {}
         for textgrid_file in textgrid_dir.glob("*.TextGrid"):
             logger.debug(f"TextGridファイル変換: {textgrid_file}")
             lab_entries = parse_textgrid_file(textgrid_file)
             lab_dict[textgrid_file.stem] = lab_entries
             logger.debug(f"phones: {[entry.phoneme for entry in lab_entries]}")
+
         if output_textgrid_dir is not None:
             copy_textgrid_files(textgrid_dir, output_textgrid_dir)
+
         return lab_dict
 
 

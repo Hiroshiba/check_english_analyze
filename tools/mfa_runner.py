@@ -101,7 +101,10 @@ def prepare_corpus_dir(
 
 
 def run_mfa_align(
-    corpus_dir: Path, model_name: str, dict_name: str, output_dir: Path
+    corpus_dir: Path,
+    dictionary_path_or_name: str,
+    model_name: str,
+    output_dir: Path,
 ) -> str:
     """mfa alignコマンドを実行し、出力を返す"""
     if output_dir.exists():
@@ -118,7 +121,7 @@ def run_mfa_align(
         "--clean",
         "--overwrite",
         str(corpus_dir),
-        dict_name,
+        dictionary_path_or_name,
         model_name,
         str(output_dir),
         "--beam=100",
@@ -132,3 +135,32 @@ def run_mfa_align(
         return result.strip()
     except subprocess.CalledProcessError as e:
         raise RuntimeError("mfa alignコマンドの実行に失敗") from e
+
+
+def run_mfa_g2p(
+    corpus_dir_or_word_list_path: Path,
+    g2p_model_name: str,
+    output_dictionary_path: Path,
+) -> str:
+    """mfa g2pコマンドを実行し、出力を返す"""
+    cmd = [
+        "conda",
+        "run",
+        "-n",
+        "mfa",
+        "mfa",
+        "g2p",
+        "--clean",
+        "--overwrite",
+        str(corpus_dir_or_word_list_path),
+        g2p_model_name,
+        str(output_dictionary_path),
+    ]
+    logger.debug(f"実行コマンド: {' '.join(cmd)}")
+
+    try:
+        result = subprocess.check_output(cmd, text=True)
+        logger.debug(f"コマンド実行結果: {result}")
+        return result.strip()
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError("mfa g2pコマンドの実行に失敗") from e

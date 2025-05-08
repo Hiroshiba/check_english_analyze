@@ -116,6 +116,12 @@
 - `tools`ディレクトリ以下の CLI ツール（`extract_feature.py`, `process_alignment.py`, `process_festival.py`, `process_phonemizer.py`, `process_syllable.py`）に`typer`を導入し、`argparse`を置き換え。
 - 上記 CLI ツールのうち、`process_festival.py`, `process_phonemizer.py`, `process_syllable.py` の `text` 引数を `typer.Argument` に修正し、Usage 通りの動作を保証。`process_alignment.py`, `extract_feature.py` は `typer.Option` のまま変更なし。
 - GitHub Actions のワークフローファイル（.github/workflows/test.yml）を修正し、MFA インストール時に `joblib<1.4` を指定することで CI エラーを解消。
+- MFA アライメント処理の未知語対応
+  - `tools/mfa_runner.py` に `run_mfa_g2p` 関数を追加し、MFA の G2P コマンドを実行可能にした。
+  - `tools/mfa_runner.py` の `run_mfa_align` が辞書ファイルパスを受け取れるように変更。
+  - `tools/process_alignment.py` で `run_mfa_g2p` を呼び出し、生成された辞書を `run_mfa_align` に渡すように変更。これにより、未知語を含むテキストでもアライメントが可能になった。
+  - `tools/mfa_runner.py` の `run_mfa_g2p` から不要な引数 `existing_dictionary_path_or_name` を削除。
+  - `tools/process_alignment.py` から不要なコメントを削除。
 
 ## 残タスク
 
@@ -157,6 +163,7 @@
 - 共通処理を関数として切り出し、コードの再利用性と可読性を向上（例：`expand_glob_pattern`関数、`verify_complete_alignment`関数）
 - ロギング設定が統一され、pytest の verbosity と連動するようになった。
 - TextGrid ファイルの出力先を任意で指定できるようになった。
+- MFA アライメント処理が未知語に対応し、G2P モデルを利用して発音辞書を動的に生成するようになった。
 
 ## 既知の課題
 
