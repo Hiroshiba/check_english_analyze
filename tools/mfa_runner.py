@@ -127,15 +127,8 @@ def run_mfa_align(
     logger.debug(f"実行コマンド: {' '.join(cmd)}")
 
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        logger.debug(f"コマンド実行結果: {result.stdout}")
-        if result.stderr:
-            logger.debug(f"コマンドエラー出力: {result.stderr}")
-        return result.stdout.strip()
+        result = subprocess.check_output(cmd, text=True)
+        logger.debug(f"コマンド実行結果: {result}")
+        return result.strip()
     except subprocess.CalledProcessError as e:
         raise RuntimeError("mfa alignコマンドの実行に失敗") from e
