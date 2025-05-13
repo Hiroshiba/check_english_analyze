@@ -117,15 +117,15 @@ def parse_phoneme(p: str, orig_word: str) -> list[tuple[str, int, str]]:
 
 
 def set_espeak_library_for_macos() -> None:
-    """macOS用にespeak dylibパスを環境変数にセット。なければwarning出力"""
+    """macOS用にespeak-ng dylibパスを環境変数にセット。なければwarning出力"""
     if platform.system() != "Darwin":
         return
-    dylib_paths = glob.glob("/opt/homebrew/Cellar/espeak/*/lib/libespeak.dylib")
+    dylib_paths = glob.glob("/opt/homebrew/Cellar/espeak-ng/*/lib/libespeak-ng.dylib")
     if dylib_paths:
         os.environ["PHONEMIZER_ESPEAK_LIBRARY"] = dylib_paths[0]
     else:
         logger.warning(
-            "espeak dylibが見つかりません: /opt/homebrew/Cellar/espeak/*/lib/libespeak.dylib"
+            "espeak-ng dylibが見つかりません: /opt/homebrew/Cellar/espeak-ng/*/lib/libespeak-ng.dylib"
         )
 
 

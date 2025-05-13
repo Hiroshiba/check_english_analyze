@@ -12,7 +12,7 @@ sudo apt install espeak
 ### 2. 動作確認
 
 ```sh
-echo hello | uv run phonemize -b espeak -l en # hələʊ
+echo hello | uv run phonemize -b espeak -l en-us # hələʊ
 ```
 
 ## macOS でのインストール・利用
@@ -20,7 +20,7 @@ echo hello | uv run phonemize -b espeak -l en # hələʊ
 ### 1. インストール
 
 ```sh
-brew install espeak
+brew install espeak-ng
 ```
 
 ### 2. 動作確認
@@ -28,5 +28,5 @@ brew install espeak
 espeak の dylib パスを明示指定する。
 
 ```sh
-echo hello | uv run phonemize -b espeak -l en --espeak-library /opt/homebrew/Cellar/espeak/*/lib/libespeak.dylib # hələʊ
+echo hello | uv run phonemize -b espeak -l en-us --espeak-library /opt/homebrew/Cellar/espeak-ng/*/lib/libespeak-ng.dylib # hələʊ
 ```

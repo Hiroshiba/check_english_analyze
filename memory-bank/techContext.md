@@ -4,7 +4,7 @@
 
 - festival（TTS エンジン, apt/brew）
 - phonemizer（PyPI, uv/pip）
-- espeak（apt/brew, phonemizer バックエンド用）
+- espeak-ng（apt/brew, phonemizer バックエンド用）
 - pytest（自動テスト、parametrize によるパターン網羅）
   - `tools/conftest.py`: pytest の設定（JSON スナップショット用 fixture、ログレベル設定など）
 - ruff（静的解析・フォーマット）
@@ -17,7 +17,7 @@
 ## 開発環境・セットアップ
 
 - Ubuntu, macOS 両対応
-- festival, espeak は各 OS のパッケージマネージャで導入
+- festival, espeak-ng は各 OS のパッケージマネージャで導入
 - phonemizer は uv add phonemizer で導入
 - .gitignore は GitHub 公式 Python テンプレートを採用
 - テストは PYTHONPATH=. uv run pytest で実行
@@ -27,7 +27,7 @@
 ### festival/phonemizer 統合
 
 - festival: シラブル取得可・ストレス強弱不可
-- phonemizer+espeak: ストレス強弱取得可・シラブル不可
+- phonemizer+espeak-ng: ストレス強弱取得可・シラブル不可
 - match_phonemes.py で両者の音素列を適切にアライメント
 - process_syllable.py（旧 extract_feature.py）で両者の出力を単語単位でマージし、「音素・シラブル・単語・ストレス強弱」を一括抽出
 - symbol_mapping.json で音素マッピングを定義し、1:1、1:多、多:1 の対応関係を管理（festival 要素数 1/2/記号ごとにブロック分割しアルファベット順でソート、網羅性を維持）
@@ -67,7 +67,7 @@
 
 ## 依存関係
 
-- festival, espeak, phonemizer, pytest, ruff, pydantic, sexpdata, typer, uv
+- festival, espeak-ng, phonemizer, pytest, ruff, pydantic, sexpdata, typer, uv
 
 ## ツール利用方針
 

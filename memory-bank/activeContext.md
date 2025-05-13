@@ -86,6 +86,8 @@
   - `tools/process_alignment.py` で `run_mfa_g2p` を呼び出し、生成された辞書を `run_mfa_align` に渡すように変更。これにより、未知語を含むテキストでもアライメントが可能になった。
   - `tools/mfa_runner.py` の `run_mfa_g2p` から不要な引数 `existing_dictionary_path_or_name` を削除。
   - `tools/process_alignment.py` から不要なコメントを削除。
+  - `docs/phonemizer.md` の更新: Ubuntu および macOS での `phonemize` コマンドの言語オプションを `en-us` に統一し、macOS での `espeak` 関連の記述を `espeak-ng` に修正。
+  - `tools/process_phonemizer.py` の更新: macOS での `espeak-ng` ライブラリパスを参照するように修正。
 
 ## 次のステップ
 
