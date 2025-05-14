@@ -122,6 +122,8 @@
   - `tools/process_alignment.py` で `run_mfa_g2p` を呼び出し、生成された辞書を `run_mfa_align` に渡すように変更。これにより、未知語を含むテキストでもアライメントが可能になった。
   - `tools/mfa_runner.py` の `run_mfa_g2p` から不要な引数 `existing_dictionary_path_or_name` を削除。
   - `tools/process_alignment.py` から不要なコメントを削除。
+- `tools/process_alignment.py` で使用する MFA モデルを `english_mfa` から `english_us_arpa` に変更。
+  - これに伴い、スナップショットテスト (`tools/__snapshots__/test_extract_feature/test_extract_aligned_feature_with_real_data.json`, `tools/__snapshots__/test_process_alignment.ambr`) の音素表現とタイムスタンプが更新された。
 
 ## 残タスク
 

@@ -81,9 +81,9 @@ def alignment(
     validate_mfa_command()
     validate_file_counts(text_paths, wav_paths)
 
-    acoustic_model_name = "english_mfa"
-    existing_dictionary_name = "english_mfa"
-    g2p_model_name = "english_us_mfa"
+    acoustic_model_name = "english_us_arpa"
+    existing_dictionary_name = "english_us_arpa"
+    g2p_model_name = "english_us_arpa"
 
     ensure_model_exists("acoustic", acoustic_model_name)
     ensure_model_exists("dictionary", existing_dictionary_name)

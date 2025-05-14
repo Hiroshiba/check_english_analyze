@@ -88,6 +88,8 @@
   - `tools/process_alignment.py` から不要なコメントを削除。
   - `docs/phonemizer.md` の更新: Ubuntu および macOS での `phonemize` コマンドの言語オプションを `en-us` に統一し、macOS での `espeak` 関連の記述を `espeak-ng` に修正。
   - `tools/process_phonemizer.py` の更新: macOS での `espeak-ng` ライブラリパスを参照するように修正。
+- `tools/process_alignment.py` で使用する MFA モデルを `english_mfa` から `english_us_arpa` に変更。
+  - これに伴い、スナップショットテスト (`tools/__snapshots__/test_extract_feature/test_extract_aligned_feature_with_real_data.json`, `tools/__snapshots__/test_process_alignment.ambr`) の音素表現とタイムスタンプが更新された。
 
 ## 次のステップ
 
