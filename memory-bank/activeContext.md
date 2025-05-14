@@ -20,6 +20,10 @@
 
 ## 直近の変更・決定事項
 
+- Flite のインストール手順を docs/flite.md に追加
+  - Linux/macOS の両環境で使えるインストール手順を作成
+  - 共通部分はまとめ、OS 固有の違いを明確に示す形式に整理
+  - 実際にビルドして動作確認を行った上でドキュメント化
 - `tools`ディレクトリ以下のモジュールを分割・整理
   - `process_alignment.py` から MFA 実行関連の関数を `mfa_runner.py` に移動
   - `process_alignment.py` から TextGrid パース・lab ファイル出力関連の関数を `textgrid_parser.py` に移動

@@ -1,5 +1,6 @@
 speech_tools/
 festival/
+flite/
 hiho*
 
 # Byte-compiled / optimized / DLL files
