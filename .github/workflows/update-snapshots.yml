@@ -1,0 +1,100 @@
+name: スナップショット更新
+
+on:
+  # /update-snapshotsを含むPRコメントでトリガー
+  issue_comment:
+    types: [created]
+
+  # [update.*snapshots]を含むコミットメッセージでトリガー
+  push:
+    branches: ["*"]
+
+jobs:
+  update-snapshots-comment:
+    name: スナップショット更新（PRコメント）
+    runs-on: ubuntu-latest
+    # /update-snapshotsを含むPRコメントでのみ実行
+    if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/update-snapshots')
+
+    steps:
+      - name: <Setup> コメントにリアクション追加
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'eyes'
+            });
+
+      - name: <Setup> PRブランチ情報取得
+        id: comment-branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            core.setOutput('head_ref', pr.data.head.ref);
+            core.setOutput('head_sha', pr.data.head.sha);
+            return {
+              head_ref: pr.data.head.ref,
+              head_sha: pr.data.head.sha
+            };
+
+      - name: <Setup> PRブランチをチェックアウト
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.comment-branch.outputs.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: <Build/Deploy> スナップショット更新実行
+        id: update-snapshots
+        uses: ./.github/actions/update-snapshots
+        with:
+          commit-message: "test: スナップショット更新"
+
+      - name: <Deploy> 成功リアクション追加
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: '+1'
+            });
+
+      - name: <Deploy> 失敗リアクション追加
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: '-1'
+            });
+
+  update-snapshots-commit:
+    name: スナップショット更新（コミットメッセージ）
+    runs-on: ubuntu-latest
+    # [update.*snapshots]パターンにマッチするコミットメッセージのプッシュイベントでのみ実行
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[update') && contains(github.event.head_commit.message, 'snapshots]')
+
+    steps:
+      - name: <Setup> 現在のブランチをチェックアウト
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: <Build/Deploy> スナップショット更新実行
+        id: update-snapshots
+        uses: ./.github/actions/update-snapshots
+        with:
+          commit-message: "test: スナップショット更新（自動トリガー）"
