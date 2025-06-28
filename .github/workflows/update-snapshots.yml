@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     # /update-snapshotsを含むPRコメントでのみ実行
     if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/update-snapshots')
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: <Setup> コメントにリアクション追加
@@ -86,6 +89,8 @@ jobs:
     runs-on: ubuntu-latest
     # [update.*snapshots]パターンにマッチするコミットメッセージのプッシュイベントでのみ実行
     if: github.event_name == 'push' && contains(github.event.head_commit.message, '[update') && contains(github.event.head_commit.message, 'snapshots]')
+    permissions:
+      contents: write
 
     steps:
       - name: <Setup> 現在のブランチをチェックアウト
