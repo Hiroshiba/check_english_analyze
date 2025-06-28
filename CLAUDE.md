@@ -20,6 +20,15 @@ PYTHONPATH=. uv run pytest -sv                      # 通常のテスト
 PYTHONPATH=. uv run pytest -sv --snapshot-update    # スナップショットテスト更新
 ```
 
+### CI・自動化
+```bash
+# PRコメントでスナップショット更新（GitHub Actions）
+/update-snapshots
+
+# コミットメッセージでスナップショット更新
+git commit -m "[update snapshots] テスト仕様変更"
+```
+
 ### メインツール実行
 ```bash
 PYTHONPATH=. uv run python tools/process_festival.py "text"     # festival音素解析
@@ -56,10 +65,12 @@ PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "*.txt" --wav_gl
 
 #### 厳格なコーディング規約
 - **コメント禁止**（docstring必須、意図は関数化で明確化）
+  - **例外**: コメントが必要な場合は日本語で記述
 - **型ヒント必須**（引数・返り値すべて）
 - **依存順記述**（依存多→少の順、main関数最上部、private関数最下部）
 - **import順序統一**（最上部配置）
 - **Pathlib強制**（os.path禁止、Path.read_text/read_bytes推奨）
+- **GitHub Actions命名規約**: stepのnameは`<Setup>`, `<Build>`, `<Test>`, `<Deploy>`等のタグ + 日本語説明
 
 #### テスト・CI戦略
 - **pytest.mark.parametrize**による網羅的テストパターン
