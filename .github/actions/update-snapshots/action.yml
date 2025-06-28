@@ -30,7 +30,17 @@ runs:
     - name: <Build> システム依存関係のインストール
       run: |
         sudo apt-get update
-        sudo apt-get install -y festival espeak-ng
+        sudo apt-get install -y festival festvox-us-slt-hts espeak-ng
+      shell: bash
+
+    - name: <Build> Miniconda & MFAのインストール
+      run: |
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+        bash miniconda.sh -b -p $HOME/miniconda
+        echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+        source $HOME/miniconda/bin/activate
+        # NOTE: joblib<1.4 to avoid MFA error
+        conda create -y -n mfa -c conda-forge montreal-forced-aligner "joblib<1.4"
       shell: bash
 
     - name: <Build> NLTKリソースのダウンロード
