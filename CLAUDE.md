@@ -31,10 +31,11 @@ git commit -m "[update snapshots] テスト仕様変更"
 
 ### メインツール実行
 ```bash
-PYTHONPATH=. uv run python tools/process_festival.py "text"     # festival音素解析
-PYTHONPATH=. uv run python tools/process_phonemizer.py "text"   # phonemizerストレス解析  
-PYTHONPATH=. uv run python tools/process_syllable.py "text"     # 統合音素・シラブル解析
-PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "*.txt" --wav_glob "*.wav" --output_dir ./output  # 音声アライメント特徴抽出
+PYTHONPATH=. uv run python tools/process_festival.py "hello, world!"          # festival音素解析
+PYTHONPATH=. uv run python tools/process_phonemizer.py "hello, world!"        # phonemizerストレス解析  
+PYTHONPATH=. uv run python tools/process_syllable.py "hello, world!"          # 統合音素・シラブル解析
+PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output  # 音素アライメントlab出力
+PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output    # 音声特徴・アライメント統合JSON出力
 ```
 
 ## プロジェクトアーキテクチャ
@@ -49,6 +50,7 @@ PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "*.txt" --wav_gl
 - `tools/process_phonemizer.py`: ストレス強弱抽出  
 - `tools/match_phonemes.py`: 動的計画法による音素列アライメント
 - `tools/process_syllable.py`: 両出力の単語単位マージ・統合ロジック
+- `tools/process_alignment.py`: 音素アライメントlabファイル出力
 - `tools/extract_feature.py`: 音声ファイルとテキストからの特徴抽出・アライメント結合
 
 #### 音素マッピング・検証システム
@@ -93,6 +95,7 @@ PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "*.txt" --wav_gl
 - Ubuntu/macOS両対応必須
 - festival, espeak-ngは各OSパッケージマネージャで導入
 - パッケージ依存・OS差異の吸収
+- 初回利用時のnltk リソースダウンロード: `uv run python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng', quiet=True)"`
 
 #### ログ・出力分離
 - `verbose`フラグによるログレベル制御
