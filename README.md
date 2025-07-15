@@ -31,14 +31,14 @@ tools ディレクトリ配下の主要スクリプトは以下の通りです�
   英語音声ファイルとテキストファイルを元に音素アライメントの lab ファイルを出力
 
   ```
-  PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output
+  PYTHONPATH=. uv run python tools/process_alignment.py --text-glob "tools/data/*.txt" --wav-glob "tools/data/*.wav" --output-dir ./hiho_aligned_output
   ```
 
 - `extract_feature.py`  
   テキストと wav ファイルから、音素・シラブル・ストレス・アライメント情報を結合した json ファイルを出力
 
   ```
-  PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output
+  PYTHONPATH=. uv run python tools/extract_feature.py --text-glob "tools/data/*.txt" --wav-glob "tools/data/*.wav" --output-dir ./hiho_aligned_output
   ```
 
 ## 環境構築

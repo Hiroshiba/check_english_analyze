@@ -34,8 +34,8 @@ git commit -m "[update snapshots] テスト仕様変更"
 PYTHONPATH=. uv run python tools/process_festival.py "hello, world!"          # festival音素解析
 PYTHONPATH=. uv run python tools/process_phonemizer.py "hello, world!"        # phonemizerストレス解析  
 PYTHONPATH=. uv run python tools/process_syllable.py "hello, world!"          # 統合音素・シラブル解析
-PYTHONPATH=. uv run python tools/process_alignment.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output  # 音素アライメントlab出力
-PYTHONPATH=. uv run python tools/extract_feature.py --text_glob "tools/data/*.txt" --wav_glob "tools/data/*.wav" --output_dir ./hiho_aligned_output    # 音声特徴・アライメント統合JSON出力
+PYTHONPATH=. uv run python tools/process_alignment.py --text-glob "tools/data/*.txt" --wav-glob "tools/data/*.wav" --output-dir ./hiho_aligned_output  # 音素アライメントlab出力
+PYTHONPATH=. uv run python tools/extract_feature.py --text-glob "tools/data/*.txt" --wav-glob "tools/data/*.wav" --output-dir ./hiho_aligned_output    # 音声特徴・アライメント統合JSON出力
 ```
 
 ## プロジェクトアーキテクチャ
