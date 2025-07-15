@@ -106,3 +106,7 @@ PYTHONPATH=. uv run python tools/extract_feature.py --text-glob "tools/data/*.tx
 - festival音素とphonmizer音素の対応関係理解
 - symbol_mapping.jsonによる1:1、1:多、多:1マッピング
 - アライメント精度とエラーハンドリングのバランス
+
+## タスクメモファイル
+
+@/mnt/c/Users/hihok/Github/tasks/英語TTS/librittsをアライメント.md

@@ -58,10 +58,18 @@ def write_lab_file(entries: list[LabEntry], output_path: Path) -> None:
     output_path.write_text(output, encoding="utf-8")
 
 
-def copy_textgrid_files(textgrid_dir: Path, output_dir: Path) -> None:
+def copy_textgrid_files(
+    textgrid_dir: Path, output_dir: Path, multi_speaker: bool = False
+) -> None:
     """TextGridファイルをコピーする"""
     output_dir.mkdir(exist_ok=True)
-    for textgrid_file in textgrid_dir.glob("*.TextGrid"):
+
+    if multi_speaker:
+        textgrid_pattern = "*/*.TextGrid"
+    else:
+        textgrid_pattern = "*.TextGrid"
+
+    for textgrid_file in textgrid_dir.glob(textgrid_pattern):
         dst = output_dir / textgrid_file.name
         try:
             shutil.copy2(textgrid_file, dst)

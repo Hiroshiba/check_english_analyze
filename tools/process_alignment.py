@@ -15,6 +15,7 @@ import typer
 from tools.mfa_runner import (
     ensure_model_exists,
     prepare_corpus_dir,
+    prepare_multi_speaker_corpus_dir,
     run_mfa_align,
     run_mfa_g2p,
     validate_mfa_command,
@@ -50,6 +51,10 @@ def main(
         Path,
         typer.Option(..., help="出力先ディレクトリ"),
     ],
+    multi_speaker: Annotated[
+        bool,
+        typer.Option(help="複数話者モード。親ディレクトリ名を話者IDとして認識する"),
+    ] = False,
     output_textgrid_dir: Annotated[
         Path | None,
         typer.Option(
@@ -62,13 +67,14 @@ def main(
 ) -> None:
     """コマンドライン引数から実行するエントリポイント"""
     logging_setting(verbose)
-    lab_dict = alignment(text_glob, wav_glob, output_textgrid_dir)
+    lab_dict = alignment(text_glob, wav_glob, multi_speaker, output_textgrid_dir)
     write_lab_files(lab_dict, output_dir)
 
 
 def alignment(
     text_glob: str,
     wav_glob: str,
+    multi_speaker: bool,
     output_textgrid_dir: Path | None = None,
 ) -> dict[str, list[LabEntry]]:
     """アライメント処理本体。各ファイル名ごとにLabEntryリストを返す"""
@@ -100,7 +106,10 @@ def alignment(
         logger.debug(f"G2P辞書出力パス: {g2p_output_dictionary_path}")
         logger.debug(f"TextGrid出力ディレクトリ: {textgrid_dir}")
 
-        prepare_corpus_dir(text_paths, wav_paths, corpus_dir)
+        if multi_speaker:
+            prepare_multi_speaker_corpus_dir(text_paths, wav_paths, corpus_dir)
+        else:
+            prepare_corpus_dir(text_paths, wav_paths, corpus_dir)
 
         logger.info("G2P辞書を生成中...")
         g2p_result = run_mfa_g2p(
@@ -120,14 +129,19 @@ def alignment(
         logger.debug(f"MFA出力: {align_result}")
 
         lab_dict: dict[str, list[LabEntry]] = {}
-        for textgrid_file in textgrid_dir.glob("*.TextGrid"):
+        if multi_speaker:
+            textgrid_pattern = "*/*.TextGrid"
+        else:
+            textgrid_pattern = "*.TextGrid"
+
+        for textgrid_file in textgrid_dir.glob(textgrid_pattern):
             logger.debug(f"TextGridファイル変換: {textgrid_file}")
             lab_entries = parse_textgrid_file(textgrid_file)
             lab_dict[textgrid_file.stem] = lab_entries
             logger.debug(f"phones: {[entry.phoneme for entry in lab_entries]}")
 
         if output_textgrid_dir is not None:
-            copy_textgrid_files(textgrid_dir, output_textgrid_dir)
+            copy_textgrid_files(textgrid_dir, output_textgrid_dir, multi_speaker)
 
         return lab_dict
 
