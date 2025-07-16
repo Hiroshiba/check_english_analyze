@@ -192,6 +192,11 @@ def run_mfa_g2p(
     output_dictionary_path: Path,
 ) -> str:
     """mfa g2pコマンドを実行し、出力を返す"""
+    num_jobs = os.cpu_count()
+    if num_jobs is None:
+        raise RuntimeError("CPUスレッド数の取得に失敗しました")
+    logger.debug(f"CPUスレッド数: {num_jobs}")
+
     cmd = [
         "conda",
         "run",
@@ -204,6 +209,7 @@ def run_mfa_g2p(
         str(corpus_dir_or_word_list_path),
         g2p_model_name,
         str(output_dictionary_path),
+        f"--num_jobs={num_jobs}",
     ]
     logger.debug(f"実行コマンド: {' '.join(cmd)}")
 
