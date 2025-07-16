@@ -1,5 +1,6 @@
 """MFAの実行に関連する関数群"""
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -153,6 +154,11 @@ def run_mfa_align(
         logger.debug(f"既存の出力ディレクトリを削除: {output_dir}")
         shutil.rmtree(output_dir)
 
+    num_jobs = os.cpu_count()
+    if num_jobs is None:
+        raise RuntimeError("CPUスレッド数の取得に失敗しました")
+    logger.debug(f"CPUスレッド数: {num_jobs}")
+
     cmd = [
         "conda",
         "run",
@@ -168,6 +174,7 @@ def run_mfa_align(
         str(output_dir),
         "--beam=100",
         "--retry_beams=400",
+        f"--num_jobs={num_jobs}",
     ]
     logger.debug(f"実行コマンド: {' '.join(cmd)}")
 
