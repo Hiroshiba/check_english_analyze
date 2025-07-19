@@ -79,70 +79,6 @@ def ensure_model_exists(model_type: str, model_name: str) -> None:
         logger.debug(f"{model_type}モデル {model_name} は既に存在します")
 
 
-def prepare_corpus_dir(
-    text_paths: list[Path], wav_paths: list[Path], corpus_dir: Path
-) -> None:
-    """MFA用コーパスディレクトリを作成し、ファイルをコピーする"""
-    logger.debug(f"コーパスディレクトリを作成: {corpus_dir}")
-    corpus_dir.mkdir(exist_ok=True)
-
-    for text_path, wav_path in zip(text_paths, wav_paths, strict=False):
-        logger.debug(f"ファイルの存在確認: {text_path}, {wav_path}")
-        if not text_path.exists():
-            raise FileNotFoundError(f"テキストファイルが見つかりません: {text_path}")
-        if not wav_path.exists():
-            raise FileNotFoundError(f"音声ファイルが見つかりません: {wav_path}")
-
-        wav_dst = corpus_dir / wav_path.name
-        txt_dst = corpus_dir / text_path.name
-        logger.debug(f"ファイルをコピー: {text_path} -> {txt_dst}")
-        shutil.copy2(text_path, txt_dst)
-        logger.debug(f"ファイルをコピー: {wav_path} -> {wav_dst}")
-        shutil.copy2(wav_path, wav_dst)
-
-
-def prepare_multi_speaker_corpus_dir(
-    text_paths: list[Path], wav_paths: list[Path], corpus_dir: Path
-) -> None:
-    """複数話者対応のMFA用コーパスディレクトリを作成する"""
-    logger.debug(f"複数話者用コーパスディレクトリを作成: {corpus_dir}")
-    corpus_dir.mkdir(exist_ok=True)
-
-    speaker_groups: dict[str, list[tuple[Path, Path]]] = {}
-
-    for text_path, wav_path in zip(text_paths, wav_paths, strict=False):
-        logger.debug(f"ファイルの存在確認: {text_path}, {wav_path}")
-        if not text_path.exists():
-            raise FileNotFoundError(f"テキストファイルが見つかりません: {text_path}")
-        if not wav_path.exists():
-            raise FileNotFoundError(f"音声ファイルが見つかりません: {wav_path}")
-
-        parent_name = text_path.parent.name
-        # speaker_1272 -> 1272 の形に変換
-        if parent_name.startswith("speaker_"):
-            speaker_id = parent_name[8:]  # "speaker_" を除去
-        else:
-            speaker_id = parent_name
-        if speaker_id not in speaker_groups:
-            speaker_groups[speaker_id] = []
-
-        speaker_groups[speaker_id].append((text_path, wav_path))
-
-    for speaker_id, files in speaker_groups.items():
-        speaker_dir = corpus_dir / speaker_id
-        speaker_dir.mkdir(exist_ok=True)
-        logger.debug(f"話者 {speaker_id} のディレクトリを作成: {speaker_dir}")
-
-        for text_path, wav_path in files:
-            wav_dst = speaker_dir / wav_path.name
-            txt_dst = speaker_dir / text_path.name
-
-            logger.debug(f"ファイルをコピー: {text_path} -> {txt_dst}")
-            shutil.copy2(text_path, txt_dst)
-            logger.debug(f"ファイルをコピー: {wav_path} -> {wav_dst}")
-            shutil.copy2(wav_path, wav_dst)
-
-
 def run_mfa_align(
     corpus_dir: Path,
     dictionary_path_or_name: str,
@@ -219,3 +155,99 @@ def run_mfa_g2p(
         return result.strip()
     except subprocess.CalledProcessError as e:
         raise RuntimeError("mfa g2pコマンドの実行に失敗") from e
+
+
+def prepare_corpus_dir(
+    text_paths: list[Path],
+    wav_paths: list[Path],
+    corpus_dir: Path,
+    remove_problematic_chars: bool,
+) -> None:
+    """MFA用コーパスディレクトリを作成し、ファイルをコピーする"""
+    logger.debug(f"コーパスディレクトリを作成: {corpus_dir}")
+    corpus_dir.mkdir(exist_ok=True)
+
+    for text_path, wav_path in zip(text_paths, wav_paths, strict=False):
+        logger.debug(f"ファイルの存在確認: {text_path}, {wav_path}")
+        if not text_path.exists():
+            raise FileNotFoundError(f"テキストファイルが見つかりません: {text_path}")
+        if not wav_path.exists():
+            raise FileNotFoundError(f"音声ファイルが見つかりません: {wav_path}")
+
+        wav_dst = corpus_dir / wav_path.name
+        txt_dst = corpus_dir / text_path.name
+
+        copy_text_file_with_preprocessing(text_path, txt_dst, remove_problematic_chars)
+
+        logger.debug(f"ファイルをコピー: {wav_path} -> {wav_dst}")
+        shutil.copy2(wav_path, wav_dst)
+
+
+def prepare_multi_speaker_corpus_dir(
+    text_paths: list[Path],
+    wav_paths: list[Path],
+    corpus_dir: Path,
+    remove_problematic_chars: bool,
+) -> None:
+    """複数話者対応のMFA用コーパスディレクトリを作成する"""
+    logger.debug(f"複数話者用コーパスディレクトリを作成: {corpus_dir}")
+    corpus_dir.mkdir(exist_ok=True)
+
+    speaker_groups: dict[str, list[tuple[Path, Path]]] = {}
+
+    for text_path, wav_path in zip(text_paths, wav_paths, strict=False):
+        logger.debug(f"ファイルの存在確認: {text_path}, {wav_path}")
+        if not text_path.exists():
+            raise FileNotFoundError(f"テキストファイルが見つかりません: {text_path}")
+        if not wav_path.exists():
+            raise FileNotFoundError(f"音声ファイルが見つかりません: {wav_path}")
+
+        parent_name = text_path.parent.name
+        if parent_name.startswith("speaker_"):
+            speaker_id = parent_name[8:]
+        else:
+            speaker_id = parent_name
+        if speaker_id not in speaker_groups:
+            speaker_groups[speaker_id] = []
+
+        speaker_groups[speaker_id].append((text_path, wav_path))
+
+    for speaker_id, files in speaker_groups.items():
+        speaker_dir = corpus_dir / speaker_id
+        speaker_dir.mkdir(exist_ok=True)
+        logger.debug(f"話者 {speaker_id} のディレクトリを作成: {speaker_dir}")
+
+        for text_path, wav_path in files:
+            wav_dst = speaker_dir / wav_path.name
+            txt_dst = speaker_dir / text_path.name
+
+            copy_text_file_with_preprocessing(
+                text_path, txt_dst, remove_problematic_chars
+            )
+
+            logger.debug(f"ファイルをコピー: {wav_path} -> {wav_dst}")
+            shutil.copy2(wav_path, wav_dst)
+
+
+def copy_text_file_with_preprocessing(
+    source_path: Path, destination_path: Path, apply_preprocessing: bool
+) -> None:
+    """テキストファイルをコピーし、必要に応じて前処理を適用する"""
+    logger.debug(f"テキストファイルコピー: {source_path} -> {destination_path}")
+
+    original_text = source_path.read_text(encoding="utf-8")
+
+    if apply_preprocessing:
+        logger.debug("前処理を適用中...")
+        processed_text = preprocess_text_content(original_text)
+        destination_path.write_text(processed_text, encoding="utf-8")
+    else:
+        destination_path.write_text(original_text, encoding="utf-8")
+
+
+def preprocess_text_content(text_content: str) -> str:
+    """MFAでspn音素を生成する文字を除去する"""
+    processed_text = text_content
+    for char in ["[", "]", "(", ")", "{", "}"]:
+        processed_text = processed_text.replace(char, "")
+    return processed_text

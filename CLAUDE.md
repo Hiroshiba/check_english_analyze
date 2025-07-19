@@ -83,6 +83,9 @@ PYTHONPATH=. uv run python tools/extract_feature.py --text-glob "tools/data/*.tx
 #### 例外処理ポリシー
 - 通常: 音素不一致時は**raise**でエラー
 - `tools/extract_feature.py`のみ例外的に**警告処理で続行**（NOTEコメントで明記）
+- **エラー握り潰し禁止**（return/continueでの静かな終了禁止）
+- **異常時フォールバック禁止**（予想外の動作時は明確にエラーを投げる）
+- **失敗時は必ずraise**でエラーを明示的に発生させる
 
 #### データ構造・型安全
 - **pydantic型**による厳密なデータ管理
@@ -107,6 +110,7 @@ PYTHONPATH=. uv run python tools/extract_feature.py --text-glob "tools/data/*.tx
 - symbol_mapping.jsonによる1:1、1:多、多:1マッピング
 - アライメント精度とエラーハンドリングのバランス
 
-## タスクメモファイル
+## メモ
 
 @.claude/hiho.md
+@docs/コーディング規約.md

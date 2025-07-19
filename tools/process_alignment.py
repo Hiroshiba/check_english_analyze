@@ -61,13 +61,23 @@ def main(
             help="TextGridファイルの出力先ディレクトリ。指定しない場合は出力しない。"
         ),
     ] = None,
+    remove_problematic_chars: Annotated[
+        bool,
+        typer.Option(help="spn音素になる文字`[](){ }`を除去する。"),
+    ] = False,
     verbose: Annotated[
         bool, typer.Option(help="詳細なデバッグ出力をstderrに出す")
     ] = False,
 ) -> None:
     """コマンドライン引数から実行するエントリポイント"""
     logging_setting(verbose)
-    lab_dict = alignment(text_glob, wav_glob, multi_speaker, output_textgrid_dir)
+    lab_dict = alignment(
+        text_glob,
+        wav_glob,
+        multi_speaker,
+        output_textgrid_dir,
+        remove_problematic_chars,
+    )
     write_lab_files(lab_dict, output_dir)
 
 
@@ -75,7 +85,8 @@ def alignment(
     text_glob: str,
     wav_glob: str,
     multi_speaker: bool,
-    output_textgrid_dir: Path | None = None,
+    output_textgrid_dir: Path | None,
+    remove_problematic_chars: bool,
 ) -> dict[str, list[LabEntry]]:
     """アライメント処理本体。各ファイル名ごとにLabEntryリストを返す"""
     logger.debug(f"text_glob: {text_glob}")
@@ -107,9 +118,13 @@ def alignment(
         logger.debug(f"TextGrid出力ディレクトリ: {textgrid_dir}")
 
         if multi_speaker:
-            prepare_multi_speaker_corpus_dir(text_paths, wav_paths, corpus_dir)
+            prepare_multi_speaker_corpus_dir(
+                text_paths, wav_paths, corpus_dir, remove_problematic_chars
+            )
         else:
-            prepare_corpus_dir(text_paths, wav_paths, corpus_dir)
+            prepare_corpus_dir(
+                text_paths, wav_paths, corpus_dir, remove_problematic_chars
+            )
 
         logger.info("G2P辞書を生成中...")
         g2p_result = run_mfa_g2p(
