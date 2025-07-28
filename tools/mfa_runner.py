@@ -180,7 +180,7 @@ def prepare_corpus_dir(
         copy_text_file_with_preprocessing(text_path, txt_dst, remove_problematic_chars)
 
         logger.debug(f"ファイルをコピー: {wav_path} -> {wav_dst}")
-        shutil.copy2(wav_path, wav_dst)
+        shutil.copyfile(wav_path, wav_dst)
 
 
 def prepare_multi_speaker_corpus_dir(
@@ -226,7 +226,7 @@ def prepare_multi_speaker_corpus_dir(
             )
 
             logger.debug(f"ファイルをコピー: {wav_path} -> {wav_dst}")
-            shutil.copy2(wav_path, wav_dst)
+            shutil.copyfile(wav_path, wav_dst)
 
 
 def copy_text_file_with_preprocessing(

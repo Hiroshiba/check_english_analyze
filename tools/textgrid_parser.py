@@ -72,7 +72,7 @@ def copy_textgrid_files(
     for textgrid_file in textgrid_dir.glob(textgrid_pattern):
         dst = output_dir / textgrid_file.name
         try:
-            shutil.copy2(textgrid_file, dst)
+            shutil.copyfile(textgrid_file, dst)
         except Exception as e:
             raise RuntimeError(
                 f"TextGridファイルのコピーに失敗: {textgrid_file}"
